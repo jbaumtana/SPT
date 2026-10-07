@@ -71,7 +71,7 @@ create unscheduled drafts only.
 | Block | API | Everything else |
 | --- | --- | --- |
 | Posts in composer/calendar/approvals | ✅ Create drafts (with media, tags, a time once D9 passes) | Can't edit or remove via API |
-| Inbox messages | ❌ No create. ✅ **Can read** them to confirm seeding worked | The two fake X profiles send them (CLAUDE.md rule 3). X review done (D10), so these are readable |
+| Inbox messages (permanent in Sprout, D8) | ❌ No create. ✅ **Can read** them to confirm seeding worked | The two fake X profiles send them (CLAUDE.md rule 3). X review done (D10), so these are readable |
 | Cases | ❌ No create. ✅ Read | Seeded inbox messages turned into cases by hand or in the UI |
 | Listening | ❌ No create. ✅ Read topics, messages, metrics | Set topics up once by hand. X isn't available in Listening |
 | Reports / analytics | ✅ Read only | History comes from real activity. Overlay for prospect-specific numbers |

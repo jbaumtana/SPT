@@ -55,13 +55,14 @@ flowchart LR
 
 ## What can't be fully undone
 
-- **Messages sent on X.** Inbox seeding uses real X activity between the two
-  demo profiles. Deleting the posts or DMs on X may not remove them from
-  Sprout's inbox history. Plan for them to stay: mark them complete or
-  archived in Sprout, and keep their content generic enough to survive
-  being seen by the next prospect, or tag them per run so they're filtered out.
-- **Analytics history.** Reports come from real activity on the connected
-  profiles, so they build up over time and can't be rolled back. Keep report
+- **Messages sent on X (confirmed, D8).** Deleting a post or DM on X does
+  **not** remove it from Sprout. Every seeded inbox message is permanent, so
+  inbox seeding follows the same rule as drafts: **seed once per vertical,
+  with no prospect names, and reuse.** After a demo, mark them Complete in
+  Sprout rather than trying to remove them, and use the overlay for the
+  prospect's name.
+- **Analytics history (confirmed, D6).** Reports come from real data on the
+  social profiles authorized in Sprout, so they build up over time and can't be rolled back. Keep report
   screens generic, or cover them with the overlay.
 - **Anything Sprout logs for auditing**, like approval history or activity
   logs. Assume it's permanent, so prospect names should never go there.
@@ -70,4 +71,18 @@ flowchart LR
 ## Open items
 - ~~Which object types support delete via the API?~~ None. Teardown is browser or by hand.
 - Does deleting an X post or DM remove the matching Sprout inbox item?
-- One demo tenant or several? If several, a simple check-out/check-in rule avoids two SEs resetting the same tenant at once.
+
+## Shared tenant rules
+
+We start on **one shared demo tenant** (D5). Several SEs use it, so:
+
+- **Reserve it before you load.** Only one SE loads or tears down at a time.
+  Track this with whatever the team already uses (a shared calendar, or a
+  pinned Slack message): name, start, end, run ID. A browser overlay is local
+  to one browser, so overlays don't need a reservation, only tenant writes do.
+- **Nothing prospect-specific gets written.** Other SEs will see everything
+  in the tenant. Prospect names only ever appear through the overlay.
+- **Seeded content is shared stock.** Per-vertical drafts and inbox messages
+  belong to everyone. Don't edit or complete another vertical's set mid-demo.
+- **Leave it as you found it.** Run the inventory diff when you finish and
+  clear anything that isn't part of the baseline or a vertical's stock.

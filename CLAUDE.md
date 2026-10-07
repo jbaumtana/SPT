@@ -11,13 +11,16 @@ This project automates tailored Sprout Social demos. The workflow is
    in by a human SE.
 2. **Demo tenants only.** Never act on a production tenant or a customer
    account, and never use real customer data. If you can't tell whether a
-   tenant is a demo tenant, stop and ask.
+   tenant is a demo tenant, stop and ask. The first tenant is **shared**:
+   confirm the SE has reserved it before any tenant write.
 3. **No live network activity, with one narrow exception.** Never publish,
    like, comment, follow, or DM on a real social network. The only exception
    is inbox seeding on X: the two fake customer profiles listed in
    `context/tenant-baseline.md` may send messages **only to the demo brand's
    own X profile**, never to or about anyone else, in volumes and wording
-   approved in the plan, and each message is logged in the manifest. Until
+   approved in the plan, and each message is logged in the manifest. These
+   messages are permanent in Sprout (D8), so they must be prospect-neutral,
+   seeded once per vertical and reused. Until
    Legal answers L3, a person sends them, not an agent.
 4. **Sample data stays sample data.** Generated metrics are never presented as
    the prospect's real results, a benchmark, or a promise. Commenters, DM

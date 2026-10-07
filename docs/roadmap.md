@@ -30,7 +30,9 @@ passes.
 - [ ] Overlay route: map Sprout demo screens into `app-map.json`, test revert
 - [ ] Thin API client, locked to the demo customer ID, unscheduled drafts only until D9 is answered
 - [ ] Seed one reusable draft set per vertical (no prospect names), with every write logged to `manifest.json`
-- [ ] Reset: manifest-driven teardown + before/after inventory diff ([tenant-snapshots.md](tenant-snapshots.md))
+- [ ] Shared-tenant reservation (calendar or Slack) before any tenant write
+- [ ] Seed one prospect-neutral inbox set per vertical from the two fake X profiles (permanent in Sprout, D8)
+- [ ] Reset: mark seeded items Complete, browser cleanup of drafts, before/after inventory diff ([tenant-snapshots.md](tenant-snapshots.md))
 - [ ] Inbox seeding on X from the two fake profiles (after Legal answers L3)
 - [ ] Verify step: walk the click path, screenshot each screen, diff against the plan
 
