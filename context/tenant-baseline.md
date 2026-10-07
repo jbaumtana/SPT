@@ -2,31 +2,58 @@
 
 The known-good starting state. Reset returns the tenant to this.
 
-- **Tenant name / ID:** TODO (the first **shared** demo tenant, on production Sprout and used as a sandbox. Agents confirm the session is in this tenant at the start. Several tenants exist, some shared and some solo)
-- **Login:** the agent acts as the SE through the browser extension, in the SE's own session. API credentials: TODO (password manager, never this file)
-- **Customer ID:** TODO
+- **Tenant name:** Secure Patient Technology. The first **shared** demo tenant, on production Sprout and used as a sandbox. Agents confirm the session is in this tenant at the start. (Several tenants exist, some shared and some solo.)
+- **Customer ID:** `2160354`
+- **Login:** the agent acts as the SE through the browser extension, in the SE's own session. API credentials live in the environment's secrets (`SPROUT_API_TOKEN`, or `SPROUT_CLIENT_ID` + `SPROUT_CLIENT_SECRET`), never in this file
 - **Reset procedure today:** None. Planned approach in [docs/tenant-snapshots.md](../docs/tenant-snapshots.md)
 - **Existing tooling:** None
+- **Source:** profile export [`sources/profiles-2026-10-07.csv`](sources/profiles-2026-10-07.csv)
 
-## Profiles (connected social accounts)
-| Network | Profile name in tenant | Seeded? | Notes |
-| --- | --- | --- | --- |
-| Instagram | TODO | | |
-| Facebook | TODO | | |
-| LinkedIn | TODO | | |
-| X | TODO (demo brand profile) | | Receives seeded inbox messages |
-| TikTok | TODO | | |
-| YouTube | TODO | | |
-| Google Business | TODO | | Key for Travel & Hospitality, multi-location |
+## Groups
+Every profile on one post must be in the same group (`docs/api-coverage.md`).
 
-## Inbox seeding accounts (not connected to the tenant)
-Two fake customer profiles on X that send messages to the demo brand's X
-profile so they arrive in the Smart Inbox. See CLAUDE.md rule 3.
-
-| Handle | Persona | Credentials location |
+| Group | Group ID | Role in demos |
 | --- | --- | --- |
-| TODO | TODO | Password manager, never this file |
-| TODO | TODO | Password manager, never this file |
+| **Secure Patient Technology** | `2510938` | Demo brand for **Healthcare** (default group for this project) |
+| Snouts, Paws & Tails | TODO | Second demo brand (pet care, retail, multi-location). Not mapped to a playbook yet |
+| SPT Personas | TODO | Fake customer profiles that send inbox messages |
+
+## Demo brand profiles: Secure Patient Technology (group `2510938`)
+| Network | Name | Handle | Sprout ID | Notes |
+| --- | --- | --- | --- | --- |
+| X | SecurePatientTechnology | @SecurePatientIT | 7139160 | **Receives the seeded inbox messages** from the personas |
+| Instagram | Secure Patient Technology | securepatientit | 7140859 | |
+| LinkedIn | Secure Patient Technology | secure-patient-technology | 7139172 | |
+| Threads | securepatientit | securepatientit | 7213583 | |
+| Bluesky | (no display name) | securepatientit.bsky.social | 7167703 | |
+| Yelp | Secure Patient Technology | (Wilton, CT listing) | 7314445 | Reviews in the Sprout UI only. **Not available via the API** |
+| Reddit user | SPTJackie | SPTJackie | 7485688 | Shared with Snouts, Paws & Tails |
+
+No Facebook, TikTok, YouTube, or Google Business profile in this group.
+Facebook and Google Business only exist under Snouts, Paws & Tails.
+
+## Inbox seeding personas (group: SPT Personas)
+Fake customer profiles. They're **connected to Sprout**, so messages can be
+sent from inside Sprout or on X directly. See CLAUDE.md rule 3.
+
+| Network | Handle | Persona | Sprout ID | Credentials |
+| --- | --- | --- | --- | --- |
+| X | @EmilyNMarketing | Emily Nguyen | 7371059 | Password manager, never this file |
+| X | @dublindrforkids | Liam O'Sullivan | 7371093 | Password manager, never this file |
+| Instagram | drarlettabrown | Arletta Brown | 7599412 | **Not yet cleared as a seeding persona.** Confirm before use |
+
+## Second demo brand: Snouts, Paws & Tails
+Pet care brand with the widest network coverage in the tenant: Facebook,
+Instagram, X, LinkedIn, Threads, Bluesky, TikTok, Pinterest, Reddit
+(subreddit + user), Snapchat, WhatsApp, Google Business, two Yelp listings,
+two Google Analytics properties, and Meta + LinkedIn ad accounts. Full list
+in the profile export.
+
+A few profiles in this group look like leftovers from other demos (LinkedIn
+"Summit Active", TikTok "sproutcoffeeco", LinkedIn ad accounts "FTB" and
+"Sprout's Ad Account"). Leave them alone. They aren't ours to clean up.
+
+Ad accounts and Yelp aren't available through the API.
 
 ## Groups, users, and roles
 | User (persona) | Role / permissions | Used to demo |
