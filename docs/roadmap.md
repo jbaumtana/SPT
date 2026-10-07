@@ -6,7 +6,7 @@ passes.
 ## Phase 0: Map and discover (≈1 week)
 - [ ] Answer [open-questions.md](open-questions.md) with Demo Engineering
 - [ ] Book the Security/IT conversation early, even for Phase 1 (it uses prospect info)
-- [ ] Inventory existing Rovo/Confluence demo assets, and link them from `context/`
+- [ ] Collect existing demo assets into `context/sources/` (exports, PDFs, or copy-paste)
 - [ ] Fill in demo-tailor `profile/product-profile.md` with Sprout's real terms and click path
 
 **Exit:** we know what's automatable via API, what isn't, and who signs off.

@@ -65,6 +65,7 @@ plugin is generic. This repo makes it Sprout-native.
 ```
 CLAUDE.md                 Rules every agent working here follows
 context/                  The context layer (what a good Sprout demo contains)
+  sources/                Drop-in folder for existing docs (exports, PDFs, notes)
   tenant-baseline.md      Standard demo tenant setup
   personas.md             Buyer and in-product personas
   report-templates.md     Reports we show and why
@@ -80,7 +81,9 @@ runs/                     One folder per demo run (git-ignored, may hold prospec
 
 1. Answer the Phase 0 questions in [docs/open-questions.md](docs/open-questions.md)
    (most of them are for Demo Engineering and Security).
-2. Fill in `context/`. Start by pulling existing Rovo/Confluence assets.
+2. Fill in `context/`. Drop any existing demo docs (exports, PDFs, copy-paste)
+   into [`context/sources/`](context/sources/) and have an agent turn them
+   into the context files. No connectors needed.
 3. Fill in the demo-tailor `profile/product-profile.md` with Sprout's real
    object names and standard click path.
 4. Run a first brief end to end using [examples/](examples/) as a template.

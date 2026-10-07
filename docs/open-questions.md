@@ -31,6 +31,6 @@ right person to answer.
 ## SE team
 | # | Question | Answer |
 | --- | --- | --- |
-| E1 | Where are today's best demo assets (Rovo/Confluence links)? | |
+| E1 | Where are today's best demo assets? (Export or copy them into `context/sources/`) | |
 | E2 | Which 2–3 SEs pilot Phase 1? | |
 | E3 | How long does tailoring take today (baseline for measuring time saved)? | |
