@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Demo plan",
+  "description": "The approval artifact. Generated from a prospect brief and the context layer. Nothing is built until approval.approved_by is set by a human SE.",
+  "type": "object",
+  "required": ["prospect", "playbook", "story", "screens", "data_to_generate", "tenant_actions", "approval"],
+  "properties": {
+    "prospect": { "type": "string" },
+    "playbook": { "type": "string", "description": "Path to the context/playbooks file used" },
+    "story": { "type": "string", "description": "One-paragraph narrative: the pains, in order, and how the demo resolves them" },
+    "screens": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["screen", "answers_pain"],
+        "properties": {
+          "screen": { "type": "string" },
+          "answers_pain": { "type": "string" },
+          "minutes": { "type": "number" }
+        }
+      }
+    },
+    "data_to_generate": {
+      "type": "object",
+      "properties": {
+        "brands_and_profiles": { "type": "array", "items": { "type": "string" } },
+        "posts": { "type": "integer" },
+        "campaigns": { "type": "array", "items": { "type": "string" } },
+        "inbox_messages": { "type": "integer" },
+        "sentiment_mix": { "type": "string", "description": "e.g. '70/20/10 pos/neu/neg, one negative cluster about billing'" },
+        "listening_topics": { "type": "array", "items": { "type": "string" } },
+        "reports": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "brand_kit": {
+      "type": "object",
+      "properties": {
+        "use_prospect_logo": { "type": "boolean" },
+        "colors": { "type": "array", "items": { "type": "string" } },
+        "voice_notes": { "type": "string" }
+      }
+    },
+    "tenant_actions": {
+      "type": "array",
+      "description": "Everything that would touch a tenant. Empty in Phase 1.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "action": { "type": "string" },
+          "route": { "enum": ["api", "browser-seed", "overlay", "manual"] },
+          "reversible_by": { "type": "string" }
+        }
+      }
+    },
+    "risks_and_landmines": { "type": "array", "items": { "type": "string" } },
+    "approval": {
+      "type": "object",
+      "required": ["approved_by"],
+      "properties": {
+        "approved_by": { "type": ["string", "null"], "description": "Human SE name. null = not approved" },
+        "approved_at": { "type": ["string", "null"], "format": "date-time" },
+        "edits_requested": { "type": "string" }
+      }
+    }
+  }
+}

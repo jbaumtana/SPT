@@ -1,0 +1,36 @@
+# Fictional prospect, for testing the pipeline end to end.
+company:
+  name: Bayline Health
+  website: https://example.com/bayline
+  size: Regional system, 9 hospitals, 40 clinics
+  social_handles:
+    instagram: "@baylinehealth"
+    facebook: Bayline Health
+    linkedin: bayline-health
+industry: healthcare
+industry_detail: Regional nonprofit hospital system
+use_cases: [publishing, approvals, engagement-inbox, reporting]
+competitors: [Coastal Regional Medical, Harborpoint Health]
+incumbent_tools: [native network tools, shared spreadsheet calendar]
+pains:
+  - pain: "Every facility posts on its own and legal finds out after the fact"
+    who: Comms director
+    severity: high
+  - pain: "Patients DM about bills and we miss them for days"
+    who: Patient experience lead
+    severity: high
+  - pain: "I can't show the board what social does for recruiting"
+    who: Comms director
+    severity: medium
+attendees:
+  - { role: VP Marketing & Communications, persona: Marketing / comms director }
+  - { role: Social media manager, persona: Social media manager }
+  - { role: Compliance counsel, persona: Compliance / legal reviewer }
+demo:
+  date: 2026-10-14
+  length_minutes: 30
+  stage: Post-discovery, first demo
+  goal: Show governed multi-facility publishing and get compliance comfortable
+landmines:
+  - No PHI anywhere, including inbox replies
+  - Don't mention their 2025 data incident

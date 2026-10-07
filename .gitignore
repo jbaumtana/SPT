@@ -1,0 +1,4 @@
+# Per-demo runs can contain prospect names, discovery notes, and brand assets.
+runs/*
+!runs/README.md
+.DS_Store

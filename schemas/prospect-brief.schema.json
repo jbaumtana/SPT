@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Prospect brief",
+  "description": "Intake for one tailored demo. Written by the SE (optionally enriched by the prospect-brief skill).",
+  "type": "object",
+  "required": ["company", "industry", "use_cases", "pains", "demo"],
+  "properties": {
+    "company": {
+      "type": "object",
+      "required": ["name"],
+      "properties": {
+        "name": { "type": "string" },
+        "website": { "type": "string" },
+        "size": { "type": "string", "description": "Employees, locations, or other scale signal" },
+        "social_handles": { "type": "object", "additionalProperties": { "type": "string" } }
+      }
+    },
+    "industry": { "enum": ["healthcare", "public-sector", "travel-hospitality", "other"] },
+    "industry_detail": { "type": "string", "description": "e.g. 'regional hospital system, 12 facilities'" },
+    "use_cases": {
+      "type": "array",
+      "items": { "enum": ["publishing", "approvals", "engagement-inbox", "reviews", "listening", "reporting", "employee-advocacy", "influencer", "other"] },
+      "minItems": 1
+    },
+    "competitors": { "type": "array", "items": { "type": "string" }, "description": "Their market competitors (for listening and share of voice)" },
+    "incumbent_tools": { "type": "array", "items": { "type": "string" }, "description": "What they use today" },
+    "pains": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["pain"],
+        "properties": {
+          "pain": { "type": "string", "description": "In the prospect's words where possible" },
+          "who": { "type": "string" },
+          "severity": { "enum": ["high", "medium", "low"] }
+        }
+      }
+    },
+    "attendees": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "role": { "type": "string" },
+          "persona": { "type": "string", "description": "Matches context/personas.md" }
+        }
+      }
+    },
+    "demo": {
+      "type": "object",
+      "required": ["date", "length_minutes"],
+      "properties": {
+        "date": { "type": "string", "format": "date" },
+        "length_minutes": { "type": "integer" },
+        "stage": { "type": "string" },
+        "goal": { "type": "string", "description": "What this demo has to accomplish" }
+      }
+    },
+    "landmines": { "type": "array", "items": { "type": "string" }, "description": "Topics or claims to avoid" }
+  }
+}
