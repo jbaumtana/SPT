@@ -6,13 +6,14 @@ right person to answer.
 ## Demo Engineering
 | # | Question | Why it matters | Answer |
 | --- | --- | --- | --- |
-| D1 | What internal demo tooling exists today (seeders, scripts, tenant cloning)? | Might already cover the "hands" and reset | |
-| D2 | Which objects can be created via public or internal API? (posts, inbox items, listening topics, reports, users, profiles) | Decides API vs browser split | |
-| D3 | Can inbox messages, reviews, and engagement history be seeded without a real network connection? | Core to the "live" feel | |
-| D4 | Can a demo tenant be snapshotted and restored? How long does it take? | Best rollback story | |
+| D1 | What internal demo tooling exists today (seeders, scripts, tenant cloning)? | Might already cover the "hands" and reset | **None.** We build the hands and the reset ourselves |
+| D2 | Which objects can be created via public or internal API? (posts, inbox items, listening topics, reports, users, profiles) | Decides API vs browser split | Public API: <https://api.sproutsocial.com/docs/>. **Still need:** which objects it can create *and delete* (copy the endpoint list into `context/sources/`, or allow the domain in the agent's network settings) |
+| D3 | Can inbox messages, reviews, and engagement history be seeded without a real network connection? | Core to the "live" feel | **Partly.** Two fake customer profiles on X send messages to the demo brand's X profile. Other networks: still unknown. See CLAUDE.md rule 3 |
+| D4 | Can a demo tenant be snapshotted and restored? How long does it take? | Best rollback story | No platform snapshot. Plan: overlay + manifest teardown + inventory diff. See [tenant-snapshots.md](tenant-snapshots.md) |
 | D5 | How many demo tenants exist, and are they shared or one per SE? | Concurrency + reset cadence | |
 | D6 | How does report/analytics history get populated in demo tenants? | Charts usually can't be overlaid | |
 | D7 | Are there DOM/test IDs we can rely on, and how often does the UI change? | Browser automation stability | |
+| D8 | Does deleting an X post/DM remove the matching Sprout inbox item? | Decides whether seeded inbox messages can be reset | |
 
 ## Security / IT
 | # | Question | Answer |
@@ -27,6 +28,7 @@ right person to answer.
 | --- | --- | --- |
 | L1 | Can we show a prospect's logo and brand colors in a demo without their written OK? | |
 | L2 | Required disclaimer wording for illustrative sample data? | |
+| L3 | Are the two fake X customer profiles OK under X's rules on automation and authenticity (labeled as test accounts, only interacting with our own demo profile)? Can an agent send from them, or only a person? | |
 
 ## SE team
 | # | Question | Answer |

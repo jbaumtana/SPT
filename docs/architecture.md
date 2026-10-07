@@ -72,7 +72,7 @@ that will touch a tenant. Editing the plan is cheaper than regenerating a pack.
 | | Sprout APIs / internal tooling | Browser automation |
 | --- | --- | --- |
 | Reliability | High | Medium (UI changes break selectors) |
-| Coverage | Unknown, **ask Demo Eng** | Anything visible on screen |
+| Coverage | Public API (D2: confirm create/delete per object) | Anything visible on screen |
 | Persistence | Real tenant data | Overlay: until reload. UI-driven seeding: persists |
 | Rollback | Re-seed / delete by ID | Overlay: `revert()`. Seeded: manifest-driven delete |
 | Watchability | Logs | SE can watch it happen |
@@ -83,18 +83,21 @@ captions), prefer the overlay. It never writes to the tenant, so there's
 nothing to roll back.
 
 ### Where the "live" feel comes from
-Social networks restrict fake publishing and engagement, so we never generate
-real network activity. Liveliness comes from:
-- Seeded data in the demo tenant (scheduled posts, inbox items, report history)
+Social networks restrict fake publishing and engagement, so we keep real
+network activity to the minimum. Liveliness comes from:
+- Seeded data in the demo tenant (scheduled posts, report history)
 - Browser overlay for prospect-specific names, branding, and copy
-- Pre-seeded "incoming" inbox messages that can be revealed during the demo
+- Real inbox messages on X, sent only from two fake customer profiles to the
+  demo brand's own X profile (CLAUDE.md rule 3). These can be timed to arrive
+  during the demo
 
 ### Rollback model
 - **Overlay:** stateless. Reload or `__demoTailor.revert()`.
 - **Seeded data:** every create gets written to `manifest.json` before it
   happens. Reset = walk the manifest backward.
-- **Whole tenant:** snapshot/re-seed, if Demo Eng supports it. This is the
-  preferred long-term answer (see open questions).
+- **Whole tenant:** no platform snapshot exists. A read-only inventory
+  before and after each demo catches leftovers. Details and limits (X messages,
+  analytics history) are in [tenant-snapshots.md](tenant-snapshots.md).
 
 ## Reuse beyond demos
 

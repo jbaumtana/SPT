@@ -26,10 +26,11 @@ passes.
 
 **Exit:** the pack looks like the prospect's without manual asset hunting.
 
-## Phase 3: Hands + reset (≈3–4 weeks, depends on Phase 0 answers)
+## Phase 3: Hands + reset (≈3–4 weeks, built from scratch, since no tooling exists)
 - [ ] Overlay route: map Sprout demo screens into `app-map.json`, test revert
 - [ ] Seeding route: API or browser-driven, with every write logged to `manifest.json`
-- [ ] Reset: manifest-driven teardown, plus tenant snapshot/re-seed if available
+- [ ] Reset: manifest-driven teardown + before/after inventory diff ([tenant-snapshots.md](tenant-snapshots.md))
+- [ ] Inbox seeding on X from the two fake profiles (after Legal answers L3)
 - [ ] Verify step: walk the click path, screenshot each screen, diff against the plan
 
 **Exit:** load → demo → reset three times in a row on one tenant, no leftovers.
