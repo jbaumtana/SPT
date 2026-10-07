@@ -2,3 +2,7 @@
 runs/*
 !runs/README.md
 .DS_Store
+
+# Local credentials (Sprout API token / OAuth client). Never commit.
+.env
+.env.*
