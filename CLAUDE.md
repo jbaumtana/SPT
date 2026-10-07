@@ -22,9 +22,13 @@ This project automates tailored Sprout Social demos. The workflow is
 4. **Sample data stays sample data.** Generated metrics are never presented as
    the prospect's real results, a benchmark, or a promise. Commenters, DM
    senders, and reviewers are invented personas, never real named people.
-5. **Every tenant change gets logged.** In Phase 3 and later, write each change
+5. **API writes are permanent.** The Sprout API can't update or delete. Only
+   write to the demo customer ID, never put a prospect's name in an API write
+   (use the overlay), and never send a scheduled `delivery` until open
+   question D9 is answered. See `docs/api-coverage.md`.
+6. **Every tenant change gets logged.** In Phase 3 and later, write each change
    to `runs/<run>/manifest.json` before making it, so the reset can undo it.
-6. **Read the context layer first.** Start from `context/tenant-baseline.md`
+7. **Read the context layer first.** Start from `context/tenant-baseline.md`
    and the matching `context/playbooks/*.md`. Don't make up a Sprout feature,
    screen, or report name. If it isn't in `context/`, ask.
 

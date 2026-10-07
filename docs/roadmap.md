@@ -28,7 +28,8 @@ passes.
 
 ## Phase 3: Hands + reset (≈3–4 weeks, built from scratch, since no tooling exists)
 - [ ] Overlay route: map Sprout demo screens into `app-map.json`, test revert
-- [ ] Seeding route: API or browser-driven, with every write logged to `manifest.json`
+- [ ] Thin API client, locked to the demo customer ID, unscheduled drafts only until D9 is answered
+- [ ] Seed one reusable draft set per vertical (no prospect names), with every write logged to `manifest.json`
 - [ ] Reset: manifest-driven teardown + before/after inventory diff ([tenant-snapshots.md](tenant-snapshots.md))
 - [ ] Inbox seeding on X from the two fake profiles (after Legal answers L3)
 - [ ] Verify step: walk the click path, screenshot each screen, diff against the plan

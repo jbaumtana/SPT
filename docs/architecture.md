@@ -72,12 +72,14 @@ that will touch a tenant. Editing the plan is cheaper than regenerating a pack.
 | | Sprout APIs / internal tooling | Browser automation |
 | --- | --- | --- |
 | Reliability | High | Medium (UI changes break selectors) |
-| Coverage | Public API (D2: confirm create/delete per object) | Anything visible on screen |
+| Coverage | Read most things. Write: draft posts + media only. **No update or delete** ([api-coverage.md](api-coverage.md)) | Anything visible on screen |
 | Persistence | Real tenant data | Overlay: until reload. UI-driven seeding: persists |
-| Rollback | Re-seed / delete by ID | Overlay: `revert()`. Seeded: manifest-driven delete |
+| Rollback | None via API | Overlay: `revert()`. Seeded: manifest-driven delete |
 | Watchability | Logs | SE can watch it happen |
 
-Default: use APIs where they cover the object, and the browser for the rest.
+Default: use the API to **read** (inventory, analytics, diagnose) and to create
+reusable per-vertical drafts. Use the browser for everything else, including
+any cleanup.
 For anything that only needs to *look* right for one call (names, logos,
 captions), prefer the overlay. It never writes to the tenant, so there's
 nothing to roll back.
