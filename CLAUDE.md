@@ -24,8 +24,9 @@ This project automates tailored Sprout Social demos. The workflow is
    senders, and reviewers are invented personas, never real named people.
 5. **API writes are permanent.** The Sprout API can't update or delete. Only
    write to the demo customer ID, never put a prospect's name in an API write
-   (use the overlay), and never send a scheduled `delivery` until open
-   question D9 is answered. See `docs/api-coverage.md`.
+   (use the overlay), never send a scheduled `delivery` until open
+   question D9 is tested, and log every `publishing_post_id` returned (one per
+   profile per time, because of fan-out). See `docs/api-coverage.md`.
 6. **Every tenant change gets logged.** In Phase 3 and later, write each change
    to `runs/<run>/manifest.json` before making it, so the reset can undo it.
 7. **Read the context layer first.** Start from `context/tenant-baseline.md`

@@ -1,104 +1,107 @@
 # Sprout API coverage
 
-**What we know:** the Sprout public API is mostly **read**. The only **write**
-is creating drafts (plus uploading media for them). **There is no delete**,
-and no update.
+**Bottom line:** the Sprout public API is **read-only except for creating
+draft posts and uploading media for them.** It can't update or delete
+anything, and it can't create inbox messages, listening topics, tags, users,
+or reports.
 
-**Source:** the official docs at <https://api.sproutsocial.com/docs/> (not yet
-read directly: the agent sandbox blocks that domain) and the open-source
-[kodowjam/sprout-social-mcp-server](https://github.com/kodowjam/sprout-social-mcp-server)
-(commit `9a5459f`, Sep 2026). That repo wraps 11 calls. The official API may
-have more read endpoints (for example inbox messages or listening). Confirm
-those against the docs before planning around them.
+**Source:** the official docs (<https://api.sproutsocial.com/docs/>), saved as
+text in [`context/sources/sprout-api-docs-2026-10.txt`](../context/sources/sprout-api-docs-2026-10.txt).
+The open-source [kodowjam/sprout-social-mcp-server](https://github.com/kodowjam/sprout-social-mcp-server)
+wraps 11 of the 20 endpoints and matches the docs.
 
-## Endpoints confirmed in the MCP server
+## Access, auth, limits
 
-Base URL `https://api.sproutsocial.com`, `Authorization: Bearer <token>`.
-`{cid}` is the customer ID.
+- **Plan:** API access depends on the account's plan. The user setting it up needs the *API Permissions* permission and must accept the Analytics API Terms (Settings → Global Features → API).
+- **Auth:** OAuth 2.0 machine-to-machine (recommended: short-lived JWTs from client ID + secret) or a long-lived API token. Both are sent as `Authorization: Bearer …`.
+- **Rate limits:** **60 requests/minute, 250,000/month.**
+- **X data:** the account has to accept Sprout's X Content EULA *and* pass a short X review before X data comes back through the API. X isn't available in Listening at all.
+- **Excluded data:** paid/ads data, Yelp/Trustpilot/TripAdvisor/Glassdoor reviews, and Reddit listening messages. Google Business data is limited to the last 30 days.
 
-| Area | Method + path | R/W | What it gives us |
+## All endpoints
+
+`{cid}` = customer ID. Base URL `https://api.sproutsocial.com`.
+
+| Area | Endpoint | R/W | Use for us |
 | --- | --- | --- | --- |
-| Account | `GET /v1/metadata/client` | R | Customer ID(s) for the token |
-| Account | `GET /v1/{cid}/metadata/customer` | R | Connected profiles: IDs, network, group IDs |
-| Account | `GET /v1/{cid}/metadata/customer/tags` | R | Tags |
-| Account | `GET /v1/{cid}/metadata/customer/users` | R | Users |
-| Publishing | `POST /v1/{cid}/publishing/posts` | **W** | Create a **draft** post (see below) |
-| Publishing | `GET /v1/{cid}/publishing/posts/{id}` | R | One post by ID. No "list drafts" call is used |
-| Media | `POST /v1/{cid}/media/` | **W** | Upload image/video (by URL or multipart, 50 MB max in the wrapper). Expires in 24 h unless attached to a post |
-| Analytics | `POST /v1/{cid}/analytics/profiles` | R | Profile metrics over a date range |
-| Analytics | `POST /v1/{cid}/analytics/posts` | R | Per-post metrics. 50 per page |
+| Metadata | `GET /v1/metadata/client` | R | Find the demo customer ID |
+| Metadata | `GET /v1/{cid}/metadata/customer` | R | Profiles (IDs, network, group) |
+| Metadata | `GET /v1/{cid}/metadata/customer/tags` | R | Tags (active + archived) |
+| Metadata | `GET /v1/{cid}/metadata/customer/groups` | R | Groups |
+| Metadata | `GET /v1/{cid}/metadata/customer/users` | R | Users |
+| Metadata | `GET /v1/{cid}/metadata/customer/topics` | R | Listening topics |
+| Metadata | `GET /v1/{cid}/metadata/customer/teams` | R | Teams |
+| Metadata | `GET /v1/{cid}/metadata/customer/queues` | R | Case queues |
+| Analytics | `POST /v1/{cid}/analytics/profiles` | R | Profile metrics |
+| Analytics | `POST /v1/{cid}/analytics/posts` | R | Post metrics |
+| Inbox | `POST /v1/{cid}/messages` | R | Inbox messages received and sent, with tags, sender, and actions. Can filter by sender (`from.guid`) |
+| Listening | `POST /v1/{cid}/listening/topics/{id}/messages` | R | Messages in a topic (no X) |
+| Listening | `POST /v1/{cid}/listening/topics/{id}/metrics` | R | Topic metrics, sentiment |
+| Publishing | `POST /v1/{cid}/publishing/posts` | **W** | **Create a draft post** |
+| Publishing | `GET /v1/{cid}/publishing/posts/{id}` | R | One draft by ID |
+| Media | `POST /v1/{cid}/media/` | **W** | Upload ≤ 50 MiB (file or public URL) |
+| Media | `POST /v1/{cid}/media/submission` | **W** | Start multipart upload |
+| Media | `POST /v1/{cid}/media/submission/{id}/part/{n}` | **W** | Upload a 5 MiB part |
+| Media | `GET /v1/{cid}/media/submission/{id}` | R | Finish multipart upload |
+| Cases | `POST /v1/{cid}/cases/filter` | R | Cases: status, priority, queue, assignee, messages |
 
-The wrapper throttles to **60 requests/minute** and retries on 429/5xx. Treat
-that as the working rate limit until the docs confirm it.
+There's no PUT, PATCH, or DELETE anywhere, and no "list drafts" call.
 
-### The draft-create body
+## Creating drafts: the details that matter
 
-```json
-{
-  "is_draft": true,
-  "customer_profile_ids": ["<profile id>", "..."],
-  "text": "Post copy",
-  "group_id": 123,
-  "delivery": { "type": "SCHEDULED", "scheduled_times": ["2026-10-20T14:00:00Z"] },
-  "media": [{ "media_id": "<from /media>", "media_type": "PHOTO" }],
-  "tag_ids": [42]
-}
-```
+- `"is_draft": true` is required. *"Only posts created in draft status are supported at this time."*
+- `delivery` (a scheduled time) is optional and **still creates a draft**. Times must be in the future.
+- **Fan-out:** one request with N profiles creates N separate calendar posts, and N × T if there are T scheduled times. Each one gets its own `publishing_post_id`, so log them all.
+- Every profile on a post must be in the **same group** (`group_id`).
+- **Silent drops:** if the media doesn't suit one of the profiles (for example a PDF on Instagram), that profile is skipped with **no error**. Compare the profiles in the response with the profiles in the request.
+- Instagram Stories / Mobile Publisher can't be created. They come through as regular media posts.
+- Retrieving a post always shows `delivery_status: PENDING`, even after it's published. Use the Messages endpoint to see published posts.
+- Uploaded media expires in **24 hours** unless it's attached to a post. Supported networks: Instagram, Facebook, Threads, X, LinkedIn, YouTube, TikTok, Pinterest, Google Business.
 
-## ⚠️ Risk: scheduled drafts may publish for real
-
-The MCP server's own docs say: *"Posts are created as drafts. Whether scheduled
-drafts auto-publish depends on your Sprout account's approval workflow
-settings."* The demo tenant's profiles are real network accounts, so a
-scheduled draft could go live on a real network, and **we can't delete it via
-the API.**
-
-Until this is tested on a throwaway profile:
-- Never send `delivery` (no `scheduled_at`). Create unscheduled drafts only.
-- Check the demo tenant's approval workflow so nothing publishes without a person approving it.
-
-(Tracked as D9 in [open-questions.md](open-questions.md).)
+### Scheduled drafts (open question D9)
+The docs say the API only creates drafts, including ones with a scheduled
+time, so it shouldn't publish anything by itself. The MCP server's author
+was less sure ("depends on your approval workflow settings"). Since we can't
+delete through the API, **test it once** on a throwaway profile, with a
+scheduled time a few minutes ahead, before allowing `delivery`. Until then,
+create unscheduled drafts only.
 
 ## What this means for each building block
 
-| Block | API can do | Everything else |
+| Block | API | Everything else |
 | --- | --- | --- |
-| Synthetic posts in composer/calendar | ✅ Create drafts, with media and tags | Can't edit or remove them via API |
-| Inbox messages | ❌ No write | The two fake X profiles (CLAUDE.md rule 3) or overlay |
-| Listening topics | ❌ No write | Set up once by hand, overlay prospect names |
+| Posts in composer/calendar/approvals | ✅ Create drafts (with media, tags, a time once D9 passes) | Can't edit or remove via API |
+| Inbox messages | ❌ No create. ✅ **Can read** them to confirm seeding worked | The two fake X profiles send them (CLAUDE.md rule 3). Reading X data needs the X review (D10) |
+| Cases | ❌ No create. ✅ Read | Seeded inbox messages turned into cases by hand or in the UI |
+| Listening | ❌ No create. ✅ Read topics, messages, metrics | Set topics up once by hand. X isn't available in Listening |
 | Reports / analytics | ✅ Read only | History comes from real activity. Overlay for prospect-specific numbers |
-| Tags | Read only | Create the tags we need once, by hand |
-| Users, profiles, groups | Read only | Set up once by hand (tenant baseline) |
-| Reset | ❌ No delete | Browser automation or by hand. See below |
-| **"Diagnose" mode (customer-risk pillar)** | ✅ Profiles, users, tags, and analytics are all readable | Good fit: it's read-only by design |
+| Tags, groups, users, teams, queues | ✅ Read only | Set up once by hand in the tenant baseline |
+| Reset | ❌ Nothing | Browser automation or by hand |
+| **"Diagnose" (customer-risk pillar)** | ✅ Very strong: profiles, users, teams, queues, tags, analytics, inbox actions, cases, listening | Read-only by design |
 
-## The strategy this forces: seed per vertical, overlay per prospect
+## The strategy: seed once per vertical, overlay per prospect
 
-With no delete, every API write is permanent unless someone removes it in the
-UI. So:
+With no delete, every API write is permanent unless someone removes it in the UI.
 
-1. **Never write a prospect's name to the tenant.** Prospect names, logos,
-   and handles go on via the overlay only. That removes most of the need to
-   reset, and the confidentiality risk with it.
-2. **Seed a reusable draft set once per vertical.** For example, about 40
-   Healthcare drafts written in the playbook's voice with no company name.
-   Tag them with a fixed vertical tag (created by hand, since the API can't
-   create tags). Every Healthcare demo reuses them, and the overlay makes
-   them look like the prospect's.
-3. **Log every API write in `manifest.json`** (the returned post ID, run,
-   and tag). `GET /publishing/posts/{id}` lets us check what's still there,
-   because there's no list call.
-4. **Cleanup is a browser-automation task (or a person's).** If a draft does
-   need removing, the agent opens the post in the Sprout UI and deletes it,
-   with the SE watching and the manifest as the checklist.
+1. **Never write a prospect's name to the tenant.** Names, logos, and handles go on via the overlay only.
+2. **Seed one reusable draft set per vertical** (for example about 40 Healthcare drafts, no company names). Tag them with a fixed vertical tag created by hand, since the API can't create tags. Every Healthcare demo reuses them.
+3. **Log every `publishing_post_id`** returned (remember the fan-out) in `manifest.json`. Drafts can only be checked one by one using these IDs.
+4. **Cleanup happens in the browser or by hand,** with the manifest as the checklist.
 
-## Using the MCP server itself
+## The inventory snapshot, now fuller
 
-It's a handy reference, but don't connect it to a Sprout token as-is:
-- It's a single-maintainer third-party package. Pin a reviewed version, or
-  write our own thin client (we only need about 6 calls).
-- It has no guard against a non-demo account. Any client we use should refuse
-  every customer ID except the demo tenant's, and refuse `delivery` until D9
-  is answered.
-- The API token is a Security question (S2): who issues it, how it's scoped,
-  where it's stored.
+Before and after each demo, read and compare:
+- Metadata: profiles, groups, users, tags, topics, teams, queues
+- **Inbox:** `POST /messages` filtered to the two fake X profiles (`from.guid`) and the demo window. This shows exactly which seeded messages exist (once the X review is done, D10)
+- **Cases:** `POST /cases/filter` for the demo window
+- **Drafts:** `GET /publishing/posts/{id}` for each ID in the manifest
+
+With the 60/min limit, a full inventory takes about a minute.
+
+## Using the MCP server
+
+Treat it as a reference, not something to connect to the demo tenant as is:
+- It's a single-maintainer third-party package. Pin a reviewed version or write our own thin client.
+- It has no guard against a non-demo account. Our client should refuse every customer ID except the demo tenant's.
+- It uses a long-lived API token. The docs recommend OAuth machine-to-machine, which is better for Security (S2).
+- It doesn't log the fan-out IDs or check for silent profile drops.

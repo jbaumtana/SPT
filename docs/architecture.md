@@ -72,7 +72,7 @@ that will touch a tenant. Editing the plan is cheaper than regenerating a pack.
 | | Sprout APIs / internal tooling | Browser automation |
 | --- | --- | --- |
 | Reliability | High | Medium (UI changes break selectors) |
-| Coverage | Read most things. Write: draft posts + media only. **No update or delete** ([api-coverage.md](api-coverage.md)) | Anything visible on screen |
+| Coverage | Read: profiles, analytics, inbox, cases, listening, metadata. Write: draft posts + media only. **No update or delete** ([api-coverage.md](api-coverage.md)) | Anything visible on screen |
 | Persistence | Real tenant data | Overlay: until reload. UI-driven seeding: persists |
 | Rollback | None via API | Overlay: `revert()`. Seeded: manifest-driven delete |
 | Watchability | Logs | SE can watch it happen |

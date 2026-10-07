@@ -7,20 +7,22 @@ right person to answer.
 | # | Question | Why it matters | Answer |
 | --- | --- | --- | --- |
 | D1 | What internal demo tooling exists today (seeders, scripts, tenant cloning)? | Might already cover the "hands" and reset | **None.** We build the hands and the reset ourselves |
-| D2 | Which objects can be created via public or internal API? (posts, inbox items, listening topics, reports, users, profiles) | Decides API vs browser split | **Mostly read. The only write is draft posts (+ media upload). No update, no delete.** Details in [api-coverage.md](api-coverage.md). Still to confirm: any extra read endpoints (inbox, listening) in the official docs |
+| D2 | Which objects can be created via public or internal API? (posts, inbox items, listening topics, reports, users, profiles) | Decides API vs browser split | **Confirmed from the official docs:** 20 endpoints, all read except draft posts + media upload. No update or delete. Inbox messages, cases, and listening are readable. See [api-coverage.md](api-coverage.md) |
 | D3 | Can inbox messages, reviews, and engagement history be seeded without a real network connection? | Core to the "live" feel | **Partly.** Two fake customer profiles on X send messages to the demo brand's X profile. Other networks: still unknown. See CLAUDE.md rule 3 |
 | D4 | Can a demo tenant be snapshotted and restored? How long does it take? | Best rollback story | No platform snapshot. Plan: overlay + manifest teardown + inventory diff. See [tenant-snapshots.md](tenant-snapshots.md) |
 | D5 | How many demo tenants exist, and are they shared or one per SE? | Concurrency + reset cadence | |
 | D6 | How does report/analytics history get populated in demo tenants? | Charts usually can't be overlaid | |
 | D7 | Are there DOM/test IDs we can rely on, and how often does the UI change? | Browser automation stability | |
 | D8 | Does deleting an X post/DM remove the matching Sprout inbox item? | Decides whether seeded inbox messages can be reset | |
-| D9 | Does a *scheduled* draft created via the API ever publish without a person approving it? | A live post we can't delete via API. Until answered, API drafts are unscheduled only | |
+| D9 | Does a *scheduled* draft created via the API ever publish without a person approving it? | A live post we can't delete via API. Until answered, API drafts are unscheduled only | Docs say API posts are always drafts, so probably not. Confirm with one test on a throwaway profile |
+| D10 | Has the demo account accepted the X Content EULA and passed X's API review? | Needed to read the seeded X inbox messages through the API | |
+| D11 | Is the demo account on a plan with API access, and who has *API Permissions*? | No API without it | |
 
 ## Security / IT
 | # | Question | Answer |
 | --- | --- | --- |
 | S1 | Is it OK to process prospect discovery notes with Claude? Under what data-retention terms? | |
-| S2 | Which credentials can an agent use against demo tenants, and how are they scoped? | |
+| S2 | Which credentials can an agent use against demo tenants, and how are they scoped? (Sprout supports OAuth machine-to-machine with short-lived tokens, or long-lived API tokens) | |
 | S3 | Is Claude in Chrome / browser automation approved on demo domains? | |
 | S4 | Is there a hard technical guard that keeps agents off production tenants? | |
 

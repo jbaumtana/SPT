@@ -36,8 +36,8 @@ and a confidentiality problem at worst.
    it happens, with what's needed to undo it (an ID, a URL).
 3. **A read-only "inventory snapshot" as the safety net.** This is the version
    of a snapshot we *can* build. Before a demo, use the API to export what's
-   readable (profiles, users, tags, published-post analytics). After the
-   reset, export again and diff. Drafts have no list call, so they're checked
+   readable (metadata, inbox messages from the fake X profiles, cases,
+   analytics). After the reset, export again and diff. Drafts have no list call, so they're checked
    one by one using the IDs in the manifest. It doesn't restore anything, but
    it shows what's left over.
 
