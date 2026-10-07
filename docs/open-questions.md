@@ -14,24 +14,24 @@ right person to answer.
 | D6 | How does report/analytics history get populated in demo tenants? | Charts usually can't be overlaid | **From real data** on social profiles authorized in Sprout. Report history can't be seeded, so prospect-specific numbers come from the overlay |
 | D7 | Are there DOM/test IDs we can rely on, and how often does the UI change? | Browser automation stability | **Some stable element IDs, and the UI doesn't change often.** Overlay and browser automation are workable. Prefer the stable IDs in `app-map.json` |
 | D8 | Does deleting an X post/DM remove the matching Sprout inbox item? | Decides whether seeded inbox messages can be reset | **No.** Deleting on X doesn't remove the item from Sprout, so seeded inbox messages are permanent |
-| D9 | Does a *scheduled* draft created via the API ever publish without a person approving it? | A live post we can't delete via API. Until answered, API drafts are unscheduled only | Docs say API posts are always drafts, so probably not. Confirm with one test on a throwaway profile |
+| D9 | Does a *scheduled* draft created via the API ever publish without a person approving it? | A live post we can't delete via API. Until answered, API drafts are unscheduled only | **Confirmed: they stay drafts.** Scheduled drafts are allowed |
 | D10 | Has the demo account accepted the X Content EULA and passed X's API review? | Needed to read the seeded X inbox messages through the API | **Yes.** X data is available through the API |
 | D11 | Is the demo account on a plan with API access, and who has *API Permissions*? | No API without it | **Yes.** The plan includes API access, and API Permissions are in place |
 
 ## Security / IT
 | # | Question | Answer |
 | --- | --- | --- |
-| S1 | Is it OK to process prospect discovery notes with Claude? Under what data-retention terms? | |
-| S2 | Which credentials can an agent use against demo tenants, and how are they scoped? (Sprout supports OAuth machine-to-machine with short-lived tokens, or long-lived API tokens) | |
-| S3 | Is Claude in Chrome / browser automation approved on demo domains? | |
-| S4 | Is there a hard technical guard that keeps agents off production tenants? | |
+| S1 | Is it OK to process prospect discovery notes with Claude? Under what data-retention terms? | **Yes.** Prospect notes can be given to Claude |
+| S2 | Which credentials can an agent use against demo tenants, and how are they scoped? (Sprout supports OAuth machine-to-machine with short-lived tokens, or long-lived API tokens) | **The agent acts as the SE** in the native Sprout app through the browser extension, using the SE's own session |
+| S3 | Is Claude in Chrome / browser automation approved on demo domains? | **Yes.** Browser automation is approved |
+| S4 | Is there a hard technical guard that keeps agents off production tenants? | **No technical guard.** The tenant is on production Sprout, used as a sandbox. The guard is procedural: CLAUDE.md rules 2 and 3 (check the tenant, never publish) |
 
 ## Legal / Brand
 | # | Question | Answer |
 | --- | --- | --- |
-| L1 | Can we show a prospect's logo and brand colors in a demo without their written OK? | |
-| L2 | Required disclaimer wording for illustrative sample data? | |
-| L3 | Are the two fake X customer profiles OK under X's rules on automation and authenticity (labeled as test accounts, only interacting with our own demo profile)? Can an agent send from them, or only a person? | |
+| L1 | Can we show a prospect's logo and brand colors in a demo without their written OK? | **Yes.** Prospect logos can be used |
+| L2 | Required disclaimer wording for illustrative sample data? | **No disclaimer needed** |
+| L3 | Are the two fake X customer profiles OK under X's rules on automation and authenticity (labeled as test accounts, only interacting with our own demo profile)? Can an agent send from them, or only a person? | **Yes.** The X profiles are fine under X's rules, so an agent may send from them |
 
 ## SE team
 | # | Question | Answer |

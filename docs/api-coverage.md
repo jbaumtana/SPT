@@ -58,19 +58,16 @@ There's no PUT, PATCH, or DELETE anywhere, and no "list drafts" call.
 - Retrieving a post always shows `delivery_status: PENDING`, even after it's published. Use the Messages endpoint to see published posts.
 - Uploaded media expires in **24 hours** unless it's attached to a post. Supported networks: Instagram, Facebook, Threads, X, LinkedIn, YouTube, TikTok, Pinterest, Google Business.
 
-### Scheduled drafts (open question D9)
-The docs say the API only creates drafts, including ones with a scheduled
-time, so it shouldn't publish anything by itself. The MCP server's author
-was less sure ("depends on your approval workflow settings"). Since we can't
-delete through the API, **test it once** on a throwaway profile, with a
-scheduled time a few minutes ahead, before allowing `delivery`. Until then,
-create unscheduled drafts only.
+### Scheduled drafts (D9, confirmed)
+Scheduled drafts created through the API **stay drafts**. They don't publish
+unless a person releases them in Sprout. Scheduled times are allowed, which
+fills the publishing calendar realistically.
 
 ## What this means for each building block
 
 | Block | API | Everything else |
 | --- | --- | --- |
-| Posts in composer/calendar/approvals | ✅ Create drafts (with media, tags, a time once D9 passes) | Can't edit or remove via API |
+| Posts in composer/calendar/approvals | ✅ Create drafts (with media, tags, and scheduled times) | Can't edit or remove via API |
 | Inbox messages (permanent in Sprout, D8) | ❌ No create. ✅ **Can read** them to confirm seeding worked | The two fake X profiles send them (CLAUDE.md rule 3). X review done (D10), so these are readable |
 | Cases | ❌ No create. ✅ Read | Seeded inbox messages turned into cases by hand or in the UI |
 | Listening | ❌ No create. ✅ Read topics, messages, metrics | Set topics up once by hand. X isn't available in Listening |
@@ -103,5 +100,5 @@ With the 60/min limit, a full inventory takes about a minute.
 Treat it as a reference, not something to connect to the demo tenant as is:
 - It's a single-maintainer third-party package. Pin a reviewed version or write our own thin client.
 - It has no guard against a non-demo account. Our client should refuse every customer ID except the demo tenant's.
-- It uses a long-lived API token. The docs recommend OAuth machine-to-machine, which is better for Security (S2).
+- It uses a long-lived API token. The docs recommend OAuth machine-to-machine, which is better for Security. (Most agent work goes through the browser as the SE (S2), so the API is mainly for reads and seeding drafts.)
 - It doesn't log the fan-out IDs or check for silent profile drops.

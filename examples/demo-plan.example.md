@@ -26,7 +26,7 @@ close on a recruiting-impact report the VP can take to the board.
 - **Reports:** Cross-profile performance, careers campaign
 
 ## Brand kit
-Prospect logo: **yes, pending Legal answer L1**. Colors from their site. Voice: plain-language, warm, no jargon.
+Prospect logo: **yes** (Legal: allowed). Colors from their site. Voice: plain-language, warm, no jargon.
 
 ## Tenant actions
 None (Phase 1). SE loads manually or uses the overlay.
@@ -34,7 +34,7 @@ None (Phase 1). SE loads manually or uses the overlay.
 ## Risks and landmines
 - No PHI in any generated text. Billing replies move to a secure channel
 - Don't reference the 2025 incident
-- All metrics labeled as sample data
+- Metrics are never described as Bayline's real results
 
 ## Approval
 - **Approved by:** _(SE name)_

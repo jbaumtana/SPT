@@ -2,8 +2,9 @@
 
 The known-good starting state. Reset returns the tenant to this.
 
-- **Tenant name / ID:** TODO (the first **shared** demo tenant. Several tenants exist, some shared and some solo)
-- **Login + credential location:** TODO (password manager, never this file)
+- **Tenant name / ID:** TODO (the first **shared** demo tenant, on production Sprout and used as a sandbox. Agents check this name and ID before every action. Several tenants exist, some shared and some solo)
+- **Login:** the agent acts as the SE through the browser extension, in the SE's own session. API credentials: TODO (password manager, never this file)
+- **Customer ID:** TODO
 - **Reset procedure today:** None. Planned approach in [docs/tenant-snapshots.md](../docs/tenant-snapshots.md)
 - **Existing tooling:** None
 
