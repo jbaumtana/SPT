@@ -24,7 +24,7 @@ right person to answer.
 | S1 | Is it OK to process prospect discovery notes with Claude? Under what data-retention terms? | **Yes.** Prospect notes can be given to Claude |
 | S2 | Which credentials can an agent use against demo tenants, and how are they scoped? (Sprout supports OAuth machine-to-machine with short-lived tokens, or long-lived API tokens) | **The agent acts as the SE** in the native Sprout app through the browser extension, using the SE's own session |
 | S3 | Is Claude in Chrome / browser automation approved on demo domains? | **Yes.** Browser automation is approved |
-| S4 | Is there a hard technical guard that keeps agents off production tenants? | **No technical guard.** The tenant is on production Sprout, used as a sandbox. The guard is procedural: CLAUDE.md rules 2 and 3 (check the tenant, never publish) |
+| S4 | Is there a hard technical guard that keeps agents off production tenants? | **Yes.** The session only reaches the tenant the SE is logged into. The tenant is on production Sprout, used as a sandbox |
 
 ## Legal / Brand
 | # | Question | Answer |

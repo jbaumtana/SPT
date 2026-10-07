@@ -80,7 +80,7 @@ fills the publishing calendar realistically.
 
 With no delete, every API write is permanent unless someone removes it in the UI.
 
-1. **Never write a prospect's name to the tenant.** Names, logos, and handles go on via the overlay only.
+1. **Prospect names are allowed in drafts,** but the tenant is shared and drafts can't be deleted via the API. Tag prospect-specific drafts with the run ID and clear them in the browser afterward. Prefer the overlay when it's enough.
 2. **Seed one reusable draft set per vertical** (for example about 40 Healthcare drafts, no company names). Tag them with a fixed vertical tag created by hand, since the API can't create tags. Every Healthcare demo reuses them.
 3. **Log every `publishing_post_id`** returned (remember the fan-out) in `manifest.json`. Drafts can only be checked one by one using these IDs.
 4. **Cleanup happens in the browser or by hand,** with the manifest as the checklist.

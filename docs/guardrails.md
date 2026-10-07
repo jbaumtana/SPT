@@ -4,8 +4,8 @@ A one-pager for the Security/IT and Legal conversations.
 
 | Risk | Control |
 | --- | --- |
-| Agent acts in the wrong tenant (the sandbox is on production Sprout, and the SE's login may reach others) | No technical guard (S4). The agent checks the tenant name and customer ID against `context/tenant-baseline.md` before every action (CLAUDE.md rule 2) |
-| Agent publishes for real while acting as the SE in the browser | Never click Send / Publish / Post now / release an approval. Drafts stay drafts (CLAUDE.md rule 3) |
+| Agent acts in the wrong tenant | The session only reaches the tenant the SE is logged into (S4). The agent confirms it's the sandbox at the start of each session (CLAUDE.md rule 2) |
+| Agent publishes in a real company's name, or touches accounts we don't own | Publishing only from demo-owned accounts, with plan-approved content. Prospect names go in drafts and DMs, never in public posts. No interaction with outside accounts (CLAUDE.md rule 3) |
 | Fake activity on real social networks | Never publish or engage on real networks. All liveliness is seeded or overlaid |
 | Sample metrics mistaken for real results | No disclaimer required (L2). Metrics are never described as the prospect's real results, a benchmark, or a promise |
 | Fabricated quotes from real people | Invented personas only for commenters, DM senders, and reviewers |
