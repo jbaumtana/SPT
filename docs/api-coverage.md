@@ -12,10 +12,10 @@ wraps 11 of the 20 endpoints and matches the docs.
 
 ## Access, auth, limits
 
-- **Plan:** API access depends on the account's plan. The user setting it up needs the *API Permissions* permission and must accept the Analytics API Terms (Settings → Global Features → API).
+- **Plan:** API access depends on the account's plan. ✅ The demo account has it (D11). The user setting it up needs the *API Permissions* permission and must accept the Analytics API Terms (Settings → Global Features → API).
 - **Auth:** OAuth 2.0 machine-to-machine (recommended: short-lived JWTs from client ID + secret) or a long-lived API token. Both are sent as `Authorization: Bearer …`.
 - **Rate limits:** **60 requests/minute, 250,000/month.**
-- **X data:** the account has to accept Sprout's X Content EULA *and* pass a short X review before X data comes back through the API. X isn't available in Listening at all.
+- **X data:** ✅ done for the demo account (D10). In general, the account has to accept Sprout's X Content EULA *and* pass a short X review before X data comes back through the API. X isn't available in Listening at all.
 - **Excluded data:** paid/ads data, Yelp/Trustpilot/TripAdvisor/Glassdoor reviews, and Reddit listening messages. Google Business data is limited to the last 30 days.
 
 ## All endpoints
@@ -71,7 +71,7 @@ create unscheduled drafts only.
 | Block | API | Everything else |
 | --- | --- | --- |
 | Posts in composer/calendar/approvals | ✅ Create drafts (with media, tags, a time once D9 passes) | Can't edit or remove via API |
-| Inbox messages | ❌ No create. ✅ **Can read** them to confirm seeding worked | The two fake X profiles send them (CLAUDE.md rule 3). Reading X data needs the X review (D10) |
+| Inbox messages | ❌ No create. ✅ **Can read** them to confirm seeding worked | The two fake X profiles send them (CLAUDE.md rule 3). X review done (D10), so these are readable |
 | Cases | ❌ No create. ✅ Read | Seeded inbox messages turned into cases by hand or in the UI |
 | Listening | ❌ No create. ✅ Read topics, messages, metrics | Set topics up once by hand. X isn't available in Listening |
 | Reports / analytics | ✅ Read only | History comes from real activity. Overlay for prospect-specific numbers |
@@ -92,7 +92,7 @@ With no delete, every API write is permanent unless someone removes it in the UI
 
 Before and after each demo, read and compare:
 - Metadata: profiles, groups, users, tags, topics, teams, queues
-- **Inbox:** `POST /messages` filtered to the two fake X profiles (`from.guid`) and the demo window. This shows exactly which seeded messages exist (once the X review is done, D10)
+- **Inbox:** `POST /messages` filtered to the two fake X profiles (`from.guid`) and the demo window. This shows exactly which seeded messages exist
 - **Cases:** `POST /cases/filter` for the demo window
 - **Drafts:** `GET /publishing/posts/{id}` for each ID in the manifest
 

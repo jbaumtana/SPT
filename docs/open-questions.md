@@ -15,8 +15,8 @@ right person to answer.
 | D7 | Are there DOM/test IDs we can rely on, and how often does the UI change? | Browser automation stability | |
 | D8 | Does deleting an X post/DM remove the matching Sprout inbox item? | Decides whether seeded inbox messages can be reset | |
 | D9 | Does a *scheduled* draft created via the API ever publish without a person approving it? | A live post we can't delete via API. Until answered, API drafts are unscheduled only | Docs say API posts are always drafts, so probably not. Confirm with one test on a throwaway profile |
-| D10 | Has the demo account accepted the X Content EULA and passed X's API review? | Needed to read the seeded X inbox messages through the API | |
-| D11 | Is the demo account on a plan with API access, and who has *API Permissions*? | No API without it | |
+| D10 | Has the demo account accepted the X Content EULA and passed X's API review? | Needed to read the seeded X inbox messages through the API | **Yes.** X data is available through the API |
+| D11 | Is the demo account on a plan with API access, and who has *API Permissions*? | No API without it | **Yes.** The plan includes API access, and API Permissions are in place |
 
 ## Security / IT
 | # | Question | Answer |
