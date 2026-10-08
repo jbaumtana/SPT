@@ -5,6 +5,13 @@ draft posts and uploading media for them.** It can't update or delete
 anything, and it can't create inbox messages, listening topics, tags, users,
 or reports.
 
+**Our split (decided 2026-10-08):** the API is for reads and for creating
+drafts and their media. These are **browser only**, even if the API ever
+gains a way to do them:
+- **Reddit:** the API doesn't return the Reddit profiles anyway
+- **Deletions:** drafts, posts, seeded messages, anything
+- **Publishing:** posting live or releasing a scheduled draft
+
 **Source:** the official docs (<https://api.sproutsocial.com/docs/>), saved as
 text in [`context/sources/sprout-api-docs-2026-10.txt`](../context/sources/sprout-api-docs-2026-10.txt).
 The open-source [kodowjam/sprout-social-mcp-server](https://github.com/kodowjam/sprout-social-mcp-server)

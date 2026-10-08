@@ -41,6 +41,9 @@ This project automates tailored Sprout Social demos. The workflow is
    clear them in the browser afterward. Scheduled drafts are fine (they stay
    drafts, D9), and log every `publishing_post_id` returned (one per
    profile per time, because of fan-out). See `docs/api-coverage.md`.
+   **Browser only, never the API:** anything on Reddit, every deletion, and
+   every publish (posting live or releasing a scheduled draft). The API is for
+   reads and for creating drafts and their media, nothing else.
 6. **Every tenant change gets logged.** In Phase 3 and later, write each change
    to `runs/<run>/manifest.json` before making it, so the reset can undo it.
 7. **Read the context layer first.** Start from `context/tenant-baseline.md`

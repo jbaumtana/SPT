@@ -29,7 +29,7 @@ Every profile on one post must be in the same group (`docs/api-coverage.md`).
 | Threads | securepatientit | securepatientit | 7213583 | |
 | Bluesky | (no display name) | securepatientit.bsky.social | 7167703 | |
 | Yelp | Secure Patient Technology | (Wilton, CT listing) | 7314445 | Reviews in the Sprout UI only. **Not available via the API** |
-| Reddit user | SPTJackie | SPTJackie | 7485688 | Shared with Snouts, Paws & Tails. Not returned by the API metadata call |
+| Reddit user | SPTJackie | SPTJackie | 7485688 | Shared with Snouts, Paws & Tails. **Browser only** (not returned by the API) |
 
 No Facebook, TikTok, YouTube, or Google Business profile in this group.
 Facebook and Google Business only exist under Snouts, Paws & Tails.
