@@ -14,8 +14,10 @@ wraps 11 of the 20 endpoints and matches the docs.
 
 - **Plan:** API access depends on the account's plan. ✅ The demo account has it (D11). The user setting it up needs the *API Permissions* permission and must accept the Analytics API Terms (Settings → Global Features → API).
 - **Auth:** OAuth 2.0 machine-to-machine (recommended: short-lived JWTs from client ID + secret) or a long-lived API token. Both are sent as `Authorization: Bearer …`.
+- **In this repo's cloud environment:** the proxy adds the credential to every request to `*.sproutsocial.com`, so plain `curl` works with no header. ✅ Verified 2026-10-08: all seven metadata reads and `POST /messages` return 200, and the token only sees customer `2160354`.
 - **Rate limits:** **60 requests/minute, 250,000/month.**
 - **X data:** ✅ done for the demo account (D10). In general, the account has to accept Sprout's X Content EULA *and* pass a short X review before X data comes back through the API. X isn't available in Listening at all.
+- **Messages `fields`:** one unknown field fails the whole request with `400 Requested invalid fields`. `sentiment` is a Listening field, not an inbox one. Working set: `created_time`, `post_type`, `from.guid`, `from.name`, `from.screen_name`, `customer_profile_id`.
 - **Excluded data:** paid/ads data, Yelp/Trustpilot/TripAdvisor/Glassdoor reviews, and Reddit listening messages. Google Business data is limited to the last 30 days.
 
 ## All endpoints
