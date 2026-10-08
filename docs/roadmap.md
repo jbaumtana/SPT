@@ -31,7 +31,7 @@ passes.
 - [ ] Thin API client, locked to the demo customer ID
 - [ ] Seed one reusable draft set per vertical (no prospect names), with every write logged to `manifest.json`
 - [ ] Shared-tenant reservation (calendar or Slack) before any tenant write
-- [ ] Seed one prospect-neutral inbox set per vertical from the seeding personas: two on X, one on Instagram (permanent in Sprout, D8)
+- [ ] Seed one prospect-neutral inbox set per vertical from the seeding personas: two on X, one on Instagram with two accounts (permanent in Sprout, D8)
 - [ ] Reset: mark seeded items Complete, browser cleanup of drafts, before/after inventory diff ([tenant-snapshots.md](tenant-snapshots.md))
 - [ ] Inbox seeding on X from the two fake profiles (cleared by Legal, L3)
 - [ ] Verify step: walk the click path, screenshot each screen, diff against the plan

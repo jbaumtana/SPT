@@ -35,20 +35,19 @@ No Facebook, TikTok, YouTube, or Google Business profile in this group.
 Facebook and Google Business only exist under Snouts, Paws & Tails.
 
 ## Inbox seeding personas (group: SPT Personas)
-Three fake customer profiles, all cleared for seeding. They're **connected to Sprout**, so messages can be
-sent from inside Sprout or on X directly. See CLAUDE.md rule 3.
+Three fake customer personas on four accounts, all cleared for seeding. The
+first three accounts are **connected to Sprout**, so messages can be sent from
+inside Sprout or on the network directly. See CLAUDE.md rule 3.
 
 | Network | Handle | Persona | Sprout ID | Credentials |
 | --- | --- | --- | --- | --- |
 | X | @EmilyNMarketing | Emily Nguyen | 7371059 | Password manager, never this file |
 | X | @dublindrforkids | Liam O'Sullivan | 7371093 | Password manager, never this file |
 | Instagram | drarlettabrown | Arletta Brown | 7599412 | Cleared for seeding (Oct 2026). Credentials in password manager |
+| Instagram | arlettabrown353 | Arletta Brown (second account) | Not connected | Cleared for seeding (2026-10-08). **Not in Sprout**, so send from Instagram directly in the browser. Credentials in password manager |
 
-Arletta Brown also owns a second Instagram account, **arlettabrown353**
-(confirmed 2026-10-08). It isn't connected to Sprout, but its comments show up
-in the SPT inbox. Treat it as ours, not a real third party, when reading or
-cleaning up the inbox. It isn't on the seeding list above, so don't send from
-it until an SE clears it.
+Comments from arlettabrown353 already show up in the SPT inbox. They're ours,
+not a real third party's.
 
 ## Second demo brand: Snouts, Paws & Tails
 Pet care brand with the widest network coverage in the tenant: Facebook,
