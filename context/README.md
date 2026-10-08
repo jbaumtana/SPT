@@ -12,6 +12,7 @@ about one prospect, it goes in `runs/`.
 | [personas.md](personas.md) | Buyer personas (who's in the room) + in-product users | SE enablement |
 | [report-templates.md](report-templates.md) | Reports we show, which pain each one answers | SE enablement |
 | [listening-topics.md](listening-topics.md) | Topic query templates by vertical | SE / Listening specialists |
+| [click-paths/](click-paths/) | Desired click paths through Sprout, screen by screen | SEs |
 | [playbooks/](playbooks/) | One per vertical: vocabulary, story, data patterns, landmines | Won-deal demos |
 
 Everything here is plain files in the repo. No Rovo, Confluence, or other

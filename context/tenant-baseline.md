@@ -121,5 +121,7 @@ profiles really show, and use the overlay for any prospect-specific numbers.
 1. TODO
 2. TODO
 
+Desired click paths for specific features live in [`click-paths/`](click-paths/), starting with [Trellis insights → action](click-paths/trellis-insights.md).
+
 ## What can't be changed per prospect (and must be talked around)
 - TODO
