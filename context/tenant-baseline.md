@@ -44,6 +44,12 @@ sent from inside Sprout or on X directly. See CLAUDE.md rule 3.
 | X | @dublindrforkids | Liam O'Sullivan | 7371093 | Password manager, never this file |
 | Instagram | drarlettabrown | Arletta Brown | 7599412 | Cleared for seeding (Oct 2026). Credentials in password manager |
 
+Arletta Brown also owns a second Instagram account, **arlettabrown353**
+(confirmed 2026-10-08). It isn't connected to Sprout, but its comments show up
+in the SPT inbox. Treat it as ours, not a real third party, when reading or
+cleaning up the inbox. It isn't on the seeding list above, so don't send from
+it until an SE clears it.
+
 ## Second demo brand: Snouts, Paws & Tails
 Pet care brand with the widest network coverage in the tenant: Facebook,
 Instagram, X, LinkedIn, Threads, Bluesky, TikTok, Pinterest, Reddit
