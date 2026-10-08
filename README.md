@@ -74,6 +74,7 @@ context/                  The context layer (what a good Sprout demo contains)
 schemas/                  Prospect brief + demo plan (the approval artifact)
 examples/                 A worked fictional example of each
 docs/                     Architecture, roadmap, guardrails, open questions
+tools/                    Sprout API client (locked to the demo tenant), inventory, diff
 runs/                     One folder per demo run (git-ignored, may hold prospect info)
 ```
 

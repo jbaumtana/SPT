@@ -17,8 +17,8 @@ This project automates tailored Sprout Social demos. The workflow is
    reserved it before any tenant write.
 3. **Live activity only between accounts we own.** The agent may act in the
    browser as the SE, including publishing, but only:
-   - from the demo tenant's own profiles, or the seeding personas (two on X,
-     one on Instagram with two accounts) listed in `context/tenant-baseline.md`
+   - from the demo tenant's own profiles, or the seeding personas (Emily and Liam on X,
+     Arletta Brown on Instagram and X) listed in `context/tenant-baseline.md`
    - with content and volume approved in the plan, each item logged in the
      manifest
    - never liking, replying to, following, mentioning, or DMing an account we

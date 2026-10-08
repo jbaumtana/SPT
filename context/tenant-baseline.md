@@ -44,10 +44,10 @@ inside Sprout or on the network directly. See CLAUDE.md rule 3.
 | X | @EmilyNMarketing | Emily Nguyen | 7371059 | Password manager, never this file |
 | X | @dublindrforkids | Liam O'Sullivan | 7371093 | Password manager, never this file |
 | Instagram | drarlettabrown | Arletta Brown | 7599412 | Cleared for seeding (Oct 2026). Credentials in password manager |
-| Instagram | arlettabrown353 | Arletta Brown (second account) | Not connected | Cleared for seeding (2026-10-08). **Not in Sprout**, so send from Instagram directly in the browser. Credentials in password manager |
+| X | @arlettabrown353 | Arletta Brown (second account) | Not connected | Cleared for seeding (2026-10-08). **Not in Sprout**, so send from X directly in the browser. Credentials in password manager |
 
-Comments from arlettabrown353 already show up in the SPT inbox. They're ours,
-not a real third party's.
+Tweets from @arlettabrown353 to @SecurePatientIT already show up in the SPT
+inbox (Sep 30 and Oct 7). They're ours, not a real third party's.
 
 ## Second demo brand: Snouts, Paws & Tails
 Pet care brand with the widest network coverage in the tenant: Facebook,

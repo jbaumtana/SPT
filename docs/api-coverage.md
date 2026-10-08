@@ -24,6 +24,8 @@ wraps 11 of the 20 endpoints and matches the docs.
 - **In this repo's cloud environment:** the proxy adds the credential to every request to `*.sproutsocial.com`, so plain `curl` works with no header. ✅ Verified 2026-10-08: all seven metadata reads and `POST /messages` return 200, and the token only sees customer `2160354`.
 - **Rate limits:** **60 requests/minute, 250,000/month.**
 - **X data:** ✅ done for the demo account (D10). In general, the account has to accept Sprout's X Content EULA *and* pass a short X review before X data comes back through the API. X isn't available in Listening at all.
+- **Messages filters:** `group_id.eq(…)` is required, times take no trailing `Z` (`created_time.in(2026-10-01T00:00:00..2026-10-08T00:00:00)`), and a Yelp profile in `customer_profile_id` fails the request (`not a supported type`).
+- **Cases filters:** each date range covers one week at most. Results are tenant-wide (both brands), keyed by `id`.
 - **Messages `fields`:** one unknown field fails the whole request with `400 Requested invalid fields`. `sentiment` is a Listening field, not an inbox one. Working set: `created_time`, `post_type`, `from.guid`, `from.name`, `from.screen_name`, `customer_profile_id`.
 - **Excluded data:** paid/ads data, Yelp/Trustpilot/TripAdvisor/Glassdoor reviews, and Reddit listening messages. Google Business data is limited to the last 30 days.
 
@@ -103,6 +105,23 @@ Before and after each demo, read and compare:
 - **Drafts:** `GET /publishing/posts/{id}` for each ID in the manifest
 
 With the 60/min limit, a full inventory takes about a minute.
+
+## Our client: `tools/sprout_api.py`
+
+Standard-library Python, no install. It refuses any customer ID but
+`2160354` and any call not on its allowed list (no delete, update, or publish
+exists to send). Draft writes need an approved `runs/<run>/plan.md`, are saved
+to `manifest.json` before they're sent, record every fan-out ID, and flag
+silently dropped profiles. It also refuses Reddit profiles, archived or
+other-group tags, and the blocked real-company tag.
+
+```
+python3 tools/sprout_api.py check                                  # token reaches the demo tenant
+python3 tools/sprout_api.py inventory --out before.json --run runs/<run>
+python3 tools/sprout_api.py diff before.json after.json            # exit 1 if anything changed
+python3 tools/sprout_api.py drafts --run runs/<run> --file drafts.json
+python3 -m unittest discover -s tools                              # tests, no network
+```
 
 ## Using the MCP server
 
