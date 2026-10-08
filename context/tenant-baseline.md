@@ -15,7 +15,7 @@ Every profile on one post must be in the same group (`docs/api-coverage.md`).
 | Group | Group ID | Role in demos |
 | --- | --- | --- |
 | **Secure Patient Technology** | `2510938` | Demo brand for **Healthcare** (default group for this project) |
-| Snouts, Paws & Tails | TODO | Second demo brand (pet care, retail, multi-location). Not mapped to a playbook yet |
+| Snouts, Paws & Tails | `2239667` | Second demo brand (pet care, retail, multi-location). Not mapped to a playbook yet |
 | SPT Personas | TODO | Fake customer profiles that send inbox messages |
 
 ## Demo brand profiles: Secure Patient Technology (group `2510938`)
@@ -33,14 +33,14 @@ No Facebook, TikTok, YouTube, or Google Business profile in this group.
 Facebook and Google Business only exist under Snouts, Paws & Tails.
 
 ## Inbox seeding personas (group: SPT Personas)
-Fake customer profiles. They're **connected to Sprout**, so messages can be
+Three fake customer profiles, all cleared for seeding. They're **connected to Sprout**, so messages can be
 sent from inside Sprout or on X directly. See CLAUDE.md rule 3.
 
 | Network | Handle | Persona | Sprout ID | Credentials |
 | --- | --- | --- | --- | --- |
 | X | @EmilyNMarketing | Emily Nguyen | 7371059 | Password manager, never this file |
 | X | @dublindrforkids | Liam O'Sullivan | 7371093 | Password manager, never this file |
-| Instagram | drarlettabrown | Arletta Brown | 7599412 | **Not yet cleared as a seeding persona.** Confirm before use |
+| Instagram | drarlettabrown | Arletta Brown | 7599412 | Cleared for seeding (Oct 2026). Credentials in password manager |
 
 ## Second demo brand: Snouts, Paws & Tails
 Pet care brand with the widest network coverage in the tenant: Facebook,

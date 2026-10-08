@@ -89,7 +89,7 @@ With no delete, every API write is permanent unless someone removes it in the UI
 
 Before and after each demo, read and compare:
 - Metadata: profiles, groups, users, tags, topics, teams, queues
-- **Inbox:** `POST /messages` filtered to the two fake X profiles (`from.guid`) and the demo window. This shows exactly which seeded messages exist
+- **Inbox:** `POST /messages` filtered to the seeding personas (`from.guid`) and the demo window. This shows exactly which seeded messages exist
 - **Cases:** `POST /cases/filter` for the demo window
 - **Drafts:** `GET /publishing/posts/{id}` for each ID in the manifest
 
