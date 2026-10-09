@@ -33,6 +33,8 @@ The BCBSA test run found problems the headless test missed. Part of the cause is
 
 ## Phase 3: Data-pack generator (`demo-data-pack`)
 
+**Status: D1, D2, D3 (selector rule ready; waits on the S4 selector), D4, D6 done (2026-10-09)** in `tools/overlay_payload.py` (`build` and `check`), tests in `tools/test_overlay_payload.py`. Pinned captions use `perScope: 1` (engine) so only one post per day gets them. D5 not started. Not yet compared with the hand-fixed payload from the local pre-flight: that file isn't in the repo.
+
 | # | Problem seen | Fix |
 |---|---|---|
 | D1 | **Date-specific copy landed on the wrong day** ("Medicare Annual Enrollment starts today" on Oct 14 and on a Sep 19 approval). | Give each post `pinDate` and `dateSensitive: true/false`. Captions with a pinned date become scoped rules (E4). Date-sensitive captions are **never** put in a rotating list, and the approval rules never get them. |

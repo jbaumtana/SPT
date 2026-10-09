@@ -11,9 +11,19 @@
         "monthTitle": "#nectar-content-title",
         "calendarCaption": "div > span.sc-fqkvVR.caytnZ > div.sc-iGgWBj.gfRiXZ > span > span.seeds-text",
         "campaignLabel": "div.sc-iGgWBj.ccaLeQ > div.sc-uVWWZ.cglAnA > div.sc-iGgWBj.gQXcXM > div.sc-iGgWBj.egcwh > span.sc-jxOSlx.eVmzBt",
-        "postTime": "div.sc-uVWWZ.cglAnA > div.sc-iGgWBj.fXXECS > a.sc-fqkvVR.kBmutR > span.sc-fqkvVR.evoveT > time.CalendarWeekMessage-date"
+        "postTime": "div.sc-uVWWZ.cglAnA > div.sc-iGgWBj.fXXECS > a.sc-fqkvVR.kBmutR > span.sc-fqkvVR.evoveT > time.CalendarWeekMessage-date",
+        "calendarCaption_note": "Matches caption pieces, not whole captions (S1). Use wholeCaption."
       },
-      "stableHints": { "postTime": "time.CalendarWeekMessage-date", "calendarCaption": "span.seeds-text" }
+      "stableHints": {
+        "postTime": "time.CalendarWeekMessage-date",
+        "calendarCaption": "span.seeds-text"
+      },
+      "wholeCaption": "span[data-qa-message-text]",
+      "postKeyAttr": "data-qa-msg",
+      "dateAttr": "data-qa-date",
+      "dateFormat": "MM/DD/YYYY",
+      "root": "#publishing_calendar",
+      "stableSource": "Sprout data-qa attributes seen in the BCBSA pre-flight, 2026-10-09 (docs/overlay-fix-plan.md S1-S2). Prefer these over the hashed selectors; confirm in the next browser pass."
     },
     "composer": {
       "opensFrom": "Publishing > New Post (modal)",
@@ -33,9 +43,21 @@
       },
       "notes": "The first approval card shows an initials avatar ('SP') instead of an image, so scan returned no avatar image for it. brandName matches both the display-name and handle-style headers."
     },
-    "smartInbox": { "url": "/messages/smart", "selectors": {}, "notes": "Not scanned. The pass doesn't ask for inbox selectors." },
-    "listening": { "url": "/listening/", "selectors": {}, "notes": "Not scanned. The pass doesn't ask for listening selectors." },
-    "reports": { "url": "/reports/home/all", "selectors": {}, "notes": "Not scanned. The pass doesn't ask for report selectors." },
+    "smartInbox": {
+      "url": "/messages/smart",
+      "selectors": {},
+      "notes": "Not scanned. The pass doesn't ask for inbox selectors."
+    },
+    "listening": {
+      "url": "/listening/",
+      "selectors": {},
+      "notes": "Not scanned. The pass doesn't ask for listening selectors."
+    },
+    "reports": {
+      "url": "/reports/home/all",
+      "selectors": {},
+      "notes": "Not scanned. The pass doesn't ask for report selectors."
+    },
     "trellis": {
       "opensFrom": "Left nav, second icon (scan found it as img inside div.AIAgentNavIcon__TrellisIconContainer)",
       "selectors": {

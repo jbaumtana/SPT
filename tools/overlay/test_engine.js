@@ -88,6 +88,18 @@ const tests = {
     if (got[0] !== 'GENERAL' || got[1] !== 'PINNED') throw new Error(`got ${JSON.stringify(got)}`);
   },
 
+  async 'E4b: perScope limits a scoped rule to N elements per scope; the rest fall through'(browser) {
+    const page = await setup(browser,
+      '<div data-qa-date="10/21/2026"><span class="cap">a</span><span class="cap">b</span></div>' +
+      '<div data-qa-date="10/22/2026"><span class="cap">c</span></div>');
+    await page.evaluate(() => __demoTailor.apply({ selectorRules: [
+      { selector: '.cap', action: 'text', value: ['G1', 'G2', 'G3'] },
+      { selector: '.cap', action: 'text', scope: "[data-qa-date='10/21/2026']", perScope: 1, value: 'PINNED' },
+    ] }));
+    const got = await page.evaluate(() => [...document.querySelectorAll('.cap')].map((e) => e.textContent));
+    if (got[0] !== 'PINNED' || got[1] === 'PINNED' || got[2] === 'PINNED') throw new Error(`got ${JSON.stringify(got)}`);
+  },
+
   async 'E5: apply twice then revert once restores the page exactly'(browser) {
     const page = await setup(browser, '<p class="cap">Secure Patient Technology</p><img src="a.png">');
     const original = await page.evaluate(() => document.documentElement.outerHTML);

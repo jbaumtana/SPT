@@ -2,7 +2,8 @@
  * Copied from the demo-tailor plugin (v1.0.0) and fixed per
  * docs/overlay-fix-plan.md, Phase 1: in-place text changes (E1), wholeWord
  * next to punctuation (E2), keyed values (E3), scoped rules claimed once (E4),
- * idempotent apply (E5), audit() (E6), revert() stops all observers (E7).
+ * idempotent apply (E5), audit() (E6), revert() stops all observers (E7),
+ * perScope on scoped rules (one pinned caption per day).
  * Tests: tools/overlay/test_engine.js
  *
  * Injects prospect-specific branding and content over a running demo app,
@@ -30,6 +31,7 @@
   var claims = new WeakMap();     /* element -> {claimKey: true}: the first matching selector rule wins (E4) */
   var appliedText = new WeakMap();/* element -> {action, value} set by a text/html rule, re-applied if the app rewrites it (E1) */
   var ruleCursor = [];            /* per-rule counter so unkeyed value arrays keep cycling as nodes stream in */
+  var scopeCounts = [];           /* per-rule WeakMap: scope element -> elements claimed in it (perScope) */
   var observer = null;
   var current = null;
   var applying = false;
@@ -197,10 +199,19 @@
       var claimKey = rule.action + ':' + (rule.attr || rule.styleProp || '');
       Array.prototype.forEach.call(els, function (el, i) {
         if (typeof rule.index === 'number' && rule.index !== i) return;
+        var holder = null;
         if (rule.scope) {
-          try { if (!el.closest(rule.scope)) return; } catch (e) { return; }
-        }
-        if (!claim(el, claimKey)) return;
+          try { holder = el.closest(rule.scope); } catch (e) { return; }
+          if (!holder) return;
+          /* perScope: claim at most N elements per scope element; the rest fall through to later rules. */
+          if (rule.perScope) {
+            if (!scopeCounts[ri]) scopeCounts[ri] = new WeakMap();
+            var used = scopeCounts[ri].get(holder) || 0;
+            if (used >= rule.perScope) return;
+            if (!claim(el, claimKey)) return;
+            scopeCounts[ri].set(holder, used + 1);
+          } else if (!claim(el, claimKey)) return;
+        } else if (!claim(el, claimKey)) return;
         var values = Array.isArray(rule.value) ? rule.value : [rule.value];
         var value = pickValue(rule, ri, el, values);
         switch (rule.action) {
@@ -358,6 +369,7 @@
     claims = new WeakMap();
     appliedText = new WeakMap();
     ruleCursor = [];
+    scopeCounts = [];
     current = null;
     return { ok: true, reverted: true };
   }
