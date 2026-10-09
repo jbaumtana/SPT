@@ -117,6 +117,7 @@ other-group tags, and the blocked real-company tag.
 
 ```
 python3 tools/sprout_api.py check                                  # token reaches the demo tenant
+python3 tools/sprout_api.py index                                  # regenerate context/tenant-index.md
 python3 tools/sprout_api.py inventory --out before.json --run runs/<run>
 python3 tools/sprout_api.py diff before.json after.json            # exit 1 if anything changed
 python3 tools/sprout_api.py drafts --run runs/<run> --file drafts.json

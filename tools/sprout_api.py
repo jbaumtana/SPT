@@ -17,6 +17,7 @@ request to *.sproutsocial.com. Elsewhere, set SPROUT_API_TOKEN.
 
 CLI:
   python3 tools/sprout_api.py check
+  python3 tools/sprout_api.py index                      # writes context/tenant-index.md
   python3 tools/sprout_api.py inventory --out before.json [--run runs/<run>] [--days 14]
   python3 tools/sprout_api.py diff before.json after.json
   python3 tools/sprout_api.py drafts --run runs/<run> --file drafts.json
@@ -386,6 +387,92 @@ def inventory(client, days=14, manifest_path=None):
     return inv
 
 
+# -- tenant index ------------------------------------------------------------
+
+def render_index(inv, profiles, topics):
+    """The tenant index as Markdown: facts only, no user names or emails.
+
+    inv is an inventory(); profiles and topics are the raw metadata lists
+    (they carry the handle, topic group, and topic type the inventory drops).
+    """
+    groups = {int(k): v for k, v in inv["groups"].items()}
+    gname = lambda g: groups.get(int(g), f"group {g}")
+    out = [
+        "# Tenant index",
+        "",
+        f"**Generated** {inv['taken_at'][:10]} by `python3 tools/sprout_api.py index`. Don't edit by hand;",
+        "refresh it instead. Hand-written notes (personas, landmines, what's ours) live in",
+        "[tenant-baseline.md](tenant-baseline.md).",
+        "",
+        f"- **Customer:** `{inv['customer_id']}`. The API token sees only: {', '.join(map(str, inv['token_sees_customers']))}",
+        f"- **Users:** {len(inv['users'])} (names and emails deliberately not listed)",
+        "- **Not visible to the API:** Reddit profiles, publishing calendar contents (no list call), report names,",
+        "  Trellis, screen layouts. Those come from a browser pass ([click-paths/](click-paths/)).",
+        "",
+        "## Groups and profiles",
+    ]
+    by_group = {}
+    for p in profiles:
+        for g in p.get("groups") or [None]:
+            by_group.setdefault(g, []).append(p)
+    for g in sorted(by_group, key=lambda g: gname(g) if g else ""):
+        out += ["", f"### {gname(g) if g else 'No group'} (`{g}`)", "",
+                "| Network | Name | Handle | Profile ID |", "| --- | --- | --- | --- |"]
+        for p in sorted(by_group[g], key=lambda p: (p["network_type"], str(p.get("name")))):
+            out.append(f"| {p['network_type']} | {p.get('name') or ''} | {p.get('native_name') or ''} | {p['customer_profile_id']} |")
+
+    empty = sorted(g for g in groups if g not in by_group)
+    if empty:
+        out += ["", "Groups with no profiles: " + ", ".join(f"{gname(g)} (`{g}`)" for g in empty)]
+
+    tags = inv["tags"]
+    active = {k: t for k, t in tags.items() if t.get("active")}
+    out += ["", "## Tags", "",
+            f"{len(tags)} tags, {len(active)} active. Archived tags aren't listed.", ""]
+    scope = lambda t: "any group" if not t.get("groups") else ", ".join(gname(g) for g in t["groups"])
+    camp = sorted((k, t) for k, t in active.items() if t.get("type") == "CAMPAIGN")
+    out += ["### Active campaigns", "", "| Tag ID | Campaign | Group |", "| --- | --- | --- |"]
+    for k, t in sorted(camp, key=lambda kt: (scope(kt[1]), kt[1]["text"])):
+        text = "_(name withheld: real company, never use)_" if int(k) in BLOCKED_TAG_IDS else t["text"].strip()
+        out.append(f"| {k} | {text} | {scope(t)} |")
+    labels = {}
+    for k, t in active.items():
+        if t.get("type") != "CAMPAIGN":
+            labels.setdefault(scope(t), []).append(t["text"].strip())
+    out += ["", "### Active labels", ""]
+    for s in sorted(labels):
+        out.append(f"- **{s}** ({len(labels[s])}): " + ", ".join(sorted(labels[s], key=str.lower)))
+
+    out += ["", "## Listening topics", "", "| Topic | Type | Group |", "| --- | --- | --- |"]
+    for t in sorted(topics, key=lambda t: (gname(t.get("group_id")), t["name"])):
+        out.append(f"| {t['name']} | {t.get('topic_type', '')} | {gname(t.get('group_id'))} |")
+
+    out += ["", "## Teams and case queues", "",
+            "- **Teams:** " + ", ".join(f"{v} (`{k}`)" for k, v in sorted(inv["teams"].items(), key=lambda kv: kv[1])),
+            "- **Queues:** " + ", ".join(f"{v} (`{k}`)" for k, v in sorted(inv["queues"].items(), key=lambda kv: kv[1]))]
+
+    start, end = inv["window"][0][:10], inv["window"][1][:10]
+    pm = inv["persona_messages"]
+    per = {}
+    for m in pm.values():
+        per[(m["from"], m["post_type"])] = per.get((m["from"], m["post_type"]), 0) + 1
+    status = {}
+    for c in inv["cases"].values():
+        status[c.get("status", "?")] = status.get(c.get("status", "?"), 0) + 1
+    out += ["", f"## Activity, {start} to {end}", "",
+            f"- **Persona messages to the demo brand:** {len(pm)}"
+            + (" (" + ", ".join(f"{n} from {f} ({pt})" for (f, pt), n in sorted(per.items())) + ")" if per else ""),
+            f"- **Cases (whole tenant):** {len(inv['cases'])}"
+            + (" (" + ", ".join(f"{n} {s.lower()}" for s, n in sorted(status.items())) + ")" if status else ""),
+            ""]
+    return "\n".join(out)
+
+
+def tenant_index(client, days=30):
+    inv = inventory(client, days=days)
+    return render_index(inv, list(client.profiles().values()), client.metadata("topics"))
+
+
 def diff(before, after):
     """Per section: keys added, removed, and changed."""
     out = {}
@@ -414,6 +501,9 @@ def main(argv=None):
     p.add_argument("--out", required=True)
     p.add_argument("--run", help="run folder whose manifest drafts to check")
     p.add_argument("--days", type=int, default=14)
+    p = sub.add_parser("index", help="write the tenant index (Markdown) for agents and SEs to read")
+    p.add_argument("--out", default=str(Path(__file__).resolve().parent.parent / "context" / "tenant-index.md"))
+    p.add_argument("--days", type=int, default=30)
     p = sub.add_parser("diff", help="compare two inventory files")
     p.add_argument("before")
     p.add_argument("after")
@@ -437,6 +527,9 @@ def main(argv=None):
         inv = inventory(client, days=args.days, manifest_path=manifest_path)
         Path(args.out).write_text(json.dumps(inv, indent=2) + "\n")
         print(f"Wrote {args.out}: " + ", ".join(f"{k} {len(v)}" for k, v in inv.items() if isinstance(v, (dict, list))))
+    elif args.cmd == "index":
+        Path(args.out).write_text(tenant_index(client, days=args.days))
+        print(f"Wrote {args.out}")
     elif args.cmd == "drafts":
         manifest = Manifest(args.run)
         specs = json.loads(Path(args.file).read_text())

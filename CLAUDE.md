@@ -46,8 +46,8 @@ This project automates tailored Sprout Social demos. The workflow is
    reads and for creating drafts and their media, nothing else.
 6. **Every tenant change gets logged.** In Phase 3 and later, write each change
    to `runs/<run>/manifest.json` before making it, so the reset can undo it.
-7. **Read the context layer first.** Start from `context/tenant-baseline.md`
-   and the matching `context/playbooks/*.md`. Don't make up a Sprout feature,
+7. **Read the context layer first.** Start from `context/tenant-index.md` (generated
+   from the API), `context/tenant-baseline.md`, and the matching `context/playbooks/*.md`. Don't make up a Sprout feature,
    screen, or report name. If it isn't in `context/`, ask.
 
 ## Where things go

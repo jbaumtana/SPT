@@ -8,6 +8,7 @@ about one prospect, it goes in `runs/`.
 
 | File | Contents | Source to pull from |
 | --- | --- | --- |
+| [tenant-index.md](tenant-index.md) | **Generated.** Everything the API can read: groups, profiles, tags, topics, teams, queues, recent activity. Refresh with `python3 tools/sprout_api.py index` | The API |
 | [tenant-baseline.md](tenant-baseline.md) | Standard demo tenant: profiles, groups, users, what's pre-seeded | Demo Eng |
 | [personas.md](personas.md) | Buyer personas (who's in the room) + in-product users | SE enablement |
 | [report-templates.md](report-templates.md) | Reports we show, which pain each one answers | SE enablement |

@@ -193,6 +193,27 @@ class DraftTests(unittest.TestCase):
         self.assertEqual(self.manifest.data["entries"][0]["status"], "failed")
 
 
+class IndexTests(unittest.TestCase):
+    def test_render_index(self):
+        inv = {"taken_at": "2026-10-09T00:00:00Z", "customer_id": CID, "token_sees_customers": [CID],
+               "window": ["2026-09-09T00:00:00Z", "2026-10-09T00:00:00Z"],
+               "groups": {str(SPT): "Secure Patient Technology", str(PERSONAS): "SPT Personas"},
+               "tags": {str(t["tag_id"]): t for t in TAGS},
+               "teams": {"1": "Team A"}, "queues": {"2": "Queue B"}, "users": ["1", "2", "3"],
+               "persona_messages": {"g1": {"from": "arlettabrown353", "post_type": "TWEET"}},
+               "cases": {"9": {"status": "OPEN"}}}
+        topics = [{"name": "Secure Patient Tech", "topic_type": "BRAND_HEALTH", "group_id": SPT}]
+        md = sa.render_index(inv, PROFILES, topics)
+        self.assertIn("| twitter | Emily |  | 7371059 |", md)
+        self.assertIn("4162648 | _(name withheld", md)
+        self.assertNotIn("Real company", md)
+        self.assertNotIn("Archived", md.split("Archived tags")[1])  # archived tag texts aren't listed
+        self.assertIn("| Secure Patient Tech | BRAND_HEALTH | Secure Patient Technology |", md)
+        self.assertIn("**Users:** 3", md)
+        self.assertIn("1 from arlettabrown353 (TWEET)", md)
+        self.assertNotIn("@", md.replace("arlettabrown353", ""))  # no emails
+
+
 class DiffTests(unittest.TestCase):
     def test_diff(self):
         a = {"taken_at": "1", "tags": {"1": {"text": "a"}}, "users": ["1", "2"]}
