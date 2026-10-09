@@ -14,7 +14,7 @@ passes.
 ## Packaging (in progress)
 - [x] Tenant index generated from the API (`python3 tools/sprout_api.py index`)
 - [x] Playbook template and `add-playbook` skill (`.claude/skills/`)
-- [ ] Browser pass for what the API can't see ([browser-pass.md](browser-pass.md))
+- [x] Browser pass for what the API can't see ([browser-pass.md](browser-pass.md)): `context/tenant-index-ui.md`, `context/click-paths/app-map.json`
 - [x] Wrap as a plugin: `config.json`, `skills/` (tenant-index, add-playbook, demo-plan), marketplace in `.claude-plugin/`
 
 ## Phase 1: Brief → data pack + script (≈2–3 weeks)

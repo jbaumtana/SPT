@@ -1,0 +1,46 @@
+{
+  "generated": "2026-10-09",
+  "generatedBy": "browser pass (cloud Claude in Chrome session)",
+  "tenant": "Secure Patient Technology (group SPT)",
+  "method": "__demoTailor.scan() and __demoTailor.cssPath() on the live page, using the overlay already loaded in the tab. Nothing hand-written.",
+  "caveat": "Most paths use styled-components hash classes (sc-xxxx / short random suffixes). These change when Sprout ships a new build, so re-scan after a UI release. The stableHints are class names that appear inside the same scanned paths.",
+  "screens": {
+    "publishingCalendar": {
+      "url": "/publishing/calendar/month/expanded",
+      "selectors": {
+        "monthTitle": "#nectar-content-title",
+        "calendarCaption": "div > span.sc-fqkvVR.caytnZ > div.sc-iGgWBj.gfRiXZ > span > span.seeds-text",
+        "campaignLabel": "div.sc-iGgWBj.ccaLeQ > div.sc-uVWWZ.cglAnA > div.sc-iGgWBj.gQXcXM > div.sc-iGgWBj.egcwh > span.sc-jxOSlx.eVmzBt",
+        "postTime": "div.sc-uVWWZ.cglAnA > div.sc-iGgWBj.fXXECS > a.sc-fqkvVR.kBmutR > span.sc-fqkvVR.evoveT > time.CalendarWeekMessage-date"
+      },
+      "stableHints": { "postTime": "time.CalendarWeekMessage-date", "calendarCaption": "span.seeds-text" }
+    },
+    "composer": {
+      "opensFrom": "Publishing > New Post (modal)",
+      "selectors": {
+        "brandName": "div.sc-iGgWBj.gfRiXZ > div.sc-iGgWBj.cVFZwA > button.sc-dhKdcB.dEWgvi > div.sc-iGgWBj.jZCXEi > span.sc-fqkvVR.cueEPw",
+        "brandHandle": "div.sc-iGgWBj.gfRiXZ > div.sc-iGgWBj.cVFZwA > button.sc-dhKdcB.dEWgvi > div.sc-iGgWBj.jZCXEi > span.sc-fqkvVR.jhzpvx",
+        "profileAvatar": "div.sc-iGgWBj.cVFZwA > button.sc-dhKdcB.dEWgvi > div.sc-iGgWBj.jZCXEi > div.sc-iGgWBj.ijXpUj > img.sc-bmzYkS.AqKvu"
+      }
+    },
+    "approvals": {
+      "url": "/publishing/approval/",
+      "selectors": {
+        "brandName": "div.sc-iGgWBj.gmkLme > div.sc-fqkvVR.eTGgXn > div.sc-iGgWBj.cwNrPF > div.sc-iGgWBj.cwNrPF > h2.MessageAttribution__ResponsiveText-sc-be629ca9-3.kfuWZG",
+        "approvalCaption": "div.sc-fqkvVR.kBmutR > span.sc-fqkvVR.hAIdA-d > div.sc-iGgWBj.gfRiXZ > span > span.seeds-text",
+        "workflowLabel": "div.sc-iGgWBj.gmkLme > div.sc-fqkvVR.eTGgXn > div.sc-fqkvVR.dmpxFK > div.sc-iGgWBj.fqjjgF > span.seeds-text.seeds-text-truncated",
+        "profileAvatar": null
+      },
+      "notes": "The first approval card shows an initials avatar ('SP') instead of an image, so scan returned no avatar image for it. brandName matches both the display-name and handle-style headers."
+    },
+    "smartInbox": { "url": "/messages/smart", "selectors": {}, "notes": "Not scanned. The pass doesn't ask for inbox selectors." },
+    "listening": { "url": "/listening/", "selectors": {}, "notes": "Not scanned. The pass doesn't ask for listening selectors." },
+    "reports": { "url": "/reports/home/all", "selectors": {}, "notes": "Not scanned. The pass doesn't ask for report selectors." },
+    "trellis": {
+      "opensFrom": "Left nav, second icon (scan found it as img inside div.AIAgentNavIcon__TrellisIconContainer)",
+      "selectors": {
+        "navIcon": "div > span > button.seeds-btn.seeds-btn-unstyled > div.AIAgentNavIcon__TrellisIconContainer-sc-849feab1-0.dHWOtH > img.AIAgentIconAnimated__StyledAnimation-sc-543507ba-0.fNcefl"
+      }
+    }
+  }
+}
