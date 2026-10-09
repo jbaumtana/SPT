@@ -15,6 +15,12 @@ communications, accessibility, procurement, FedRAMP/StateRAMP (verify what appli
 3. Residents ask questions everywhere → **Smart Inbox, response tracking**
 4. Accountability → **reporting, records retention story**
 
+## Tenant fit
+From [tenant-index.md](../tenant-index.md).
+- **Demo brand group:** TODO. No demo brand in the tenant matches this vertical yet. Choose one with the SE team and relabel it with the overlay
+- **Profiles, listening topics, campaign tags:** TODO, once the group is chosen
+- **Gaps:** no vertical-specific profiles or listening topics exist in the tenant today
+
 ## Data patterns
 - Profiles: city/agency main account + departments (parks, transit, police/fire, public works)
 - Content: service updates, closures, public meetings, hiring, seasonal events, emergency alerts

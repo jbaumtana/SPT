@@ -11,6 +11,12 @@ passes.
 
 **Exit:** we know what's automatable via API, what isn't, and who signs off.
 
+## Packaging (in progress)
+- [x] Tenant index generated from the API (`python3 tools/sprout_api.py index`)
+- [x] Playbook template and `add-playbook` skill (`.claude/skills/`)
+- [ ] Browser pass for what the API can't see ([browser-pass.md](browser-pass.md))
+- [ ] Wrap as a plugin: config for the tenant, skills, script, context
+
 ## Phase 1: Brief → data pack + script (≈2–3 weeks)
 - [ ] Fill in `context/` (baseline, personas, reports, listening, 3 playbooks)
 - [ ] Lock the brief and plan schemas after trying them on 2 real (past) deals
