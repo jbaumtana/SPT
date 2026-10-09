@@ -8,11 +8,13 @@ about one prospect, it goes in `runs/`.
 
 | File | Contents | Source to pull from |
 | --- | --- | --- |
+| [tenant-index.md](tenant-index.md) | **Generated.** Everything the API can read: groups, profiles, tags, topics, teams, queues, recent activity. Refresh with `python3 tools/sprout_api.py index` | The API |
 | [tenant-baseline.md](tenant-baseline.md) | Standard demo tenant: profiles, groups, users, what's pre-seeded | Demo Eng |
 | [personas.md](personas.md) | Buyer personas (who's in the room) + in-product users | SE enablement |
 | [report-templates.md](report-templates.md) | Reports we show, which pain each one answers | SE enablement |
 | [listening-topics.md](listening-topics.md) | Topic query templates by vertical | SE / Listening specialists |
-| [playbooks/](playbooks/) | One per vertical: vocabulary, story, data patterns, landmines | Won-deal demos |
+| [click-paths/](click-paths/) | Desired click paths through Sprout, screen by screen | SEs |
+| [playbooks/](playbooks/) | One per vertical: vocabulary, story, tenant fit, data patterns, landmines. Start from [`_template.md`](playbooks/_template.md), or ask Claude to "add a playbook for <industry>" (`add-playbook` skill) | Won-deal demos, SEs |
 
 Everything here is plain files in the repo. No Rovo, Confluence, or other
 connector is required. To bring in existing material, put it in

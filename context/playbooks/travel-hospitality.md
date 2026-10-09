@@ -15,6 +15,12 @@ peak season, occupancy.
 3. Reputation drives bookings → **review management, listening**
 4. Prove what works → **reporting by property/region, competitor benchmarks**
 
+## Tenant fit
+From [tenant-index.md](../tenant-index.md).
+- **Demo brand group:** TODO. No demo brand in the tenant matches this vertical yet. Choose one with the SE team and relabel it with the overlay
+- **Profiles, listening topics, campaign tags:** TODO, once the group is chosen
+- **Gaps:** no vertical-specific profiles or listening topics exist in the tenant today
+
 ## Data patterns
 - Profiles: brand account + per-property accounts + Google Business per location
 - Content: destination inspiration, seasonal offers, loyalty, UGC reposts (invented creators), events

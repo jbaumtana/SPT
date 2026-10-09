@@ -1,0 +1,14 @@
+{
+  "name": "spt",
+  "owner": {
+    "name": "jbaumtana"
+  },
+  "description": "Sprout demo automation for SEs: tenant index, playbooks, and plan-and-approve workflow.",
+  "plugins": [
+    {
+      "name": "sprout-demo",
+      "source": "./",
+      "description": "Tailored Sprout Social demos on a shared demo tenant: a generated tenant index, industry playbooks, and a plan-and-approve workflow."
+    }
+  ]
+}

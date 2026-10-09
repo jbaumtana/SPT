@@ -1,13 +1,15 @@
 # Demo tenant baseline
 
-The known-good starting state. Reset returns the tenant to this.
+The known-good starting state. Reset returns the tenant to this. This file holds
+the hand-written facts (what's ours, personas, landmines). Everything the API
+can read is in the generated [tenant-index.md](tenant-index.md).
 
 - **Tenant name:** Secure Patient Technology. The first **shared** demo tenant, on production Sprout and used as a sandbox. Agents confirm the session is in this tenant at the start. (Several tenants exist, some shared and some solo.)
 - **Customer ID:** `2160354`
-- **Login:** the agent acts as the SE through the browser extension, in the SE's own session. API credentials live in the environment's secrets (`SPROUT_API_TOKEN`, or `SPROUT_CLIENT_ID` + `SPROUT_CLIENT_SECRET`), never in this file
+- **Login:** the agent acts as the SE through the browser extension, in the SE's own session. API credentials are injected by the cloud environment's proxy for `*.sproutsocial.com` (no key in the shell or in this file). Verified 2026-10-08: `GET /v1/metadata/client` returns only customer `2160354` ("SPT"), so the token can't reach any other customer
 - **Reset procedure today:** None. Planned approach in [docs/tenant-snapshots.md](../docs/tenant-snapshots.md)
 - **Existing tooling:** None
-- **Source:** profile export [`sources/profiles-2026-10-07.csv`](sources/profiles-2026-10-07.csv)
+- **Source:** profile export [`sources/profiles-2026-10-07.csv`](sources/profiles-2026-10-07.csv), cross-checked against the API metadata reads on 2026-10-08
 
 ## Groups
 Every profile on one post must be in the same group (`docs/api-coverage.md`).
@@ -16,7 +18,9 @@ Every profile on one post must be in the same group (`docs/api-coverage.md`).
 | --- | --- | --- |
 | **Secure Patient Technology** | `2510938` | Demo brand for **Healthcare** (default group for this project) |
 | Snouts, Paws & Tails | `2239667` | Second demo brand (pet care, retail, multi-location). Not mapped to a playbook yet |
-| SPT Personas | TODO | Fake customer profiles that send inbox messages |
+| SPT Personas | `2708092` | Fake customer profiles that send inbox messages |
+| Healthcare Tech | `2510941` | Not ours. Leave alone |
+| TEST | `2808685` | Not ours. Leave alone |
 
 ## Demo brand profiles: Secure Patient Technology (group `2510938`)
 | Network | Name | Handle | Sprout ID | Notes |
@@ -27,20 +31,25 @@ Every profile on one post must be in the same group (`docs/api-coverage.md`).
 | Threads | securepatientit | securepatientit | 7213583 | |
 | Bluesky | (no display name) | securepatientit.bsky.social | 7167703 | |
 | Yelp | Secure Patient Technology | (Wilton, CT listing) | 7314445 | Reviews in the Sprout UI only. **Not available via the API** |
-| Reddit user | SPTJackie | SPTJackie | 7485688 | Shared with Snouts, Paws & Tails |
+| Reddit user | SPTJackie | SPTJackie | 7485688 | Shared with Snouts, Paws & Tails. **Browser only** (not returned by the API) |
 
 No Facebook, TikTok, YouTube, or Google Business profile in this group.
 Facebook and Google Business only exist under Snouts, Paws & Tails.
 
 ## Inbox seeding personas (group: SPT Personas)
-Three fake customer profiles, all cleared for seeding. They're **connected to Sprout**, so messages can be
-sent from inside Sprout or on X directly. See CLAUDE.md rule 3.
+Three fake customer personas on four accounts, all cleared for seeding. The
+first three accounts are **connected to Sprout**, so messages can be sent from
+inside Sprout or on the network directly. See CLAUDE.md rule 3.
 
 | Network | Handle | Persona | Sprout ID | Credentials |
 | --- | --- | --- | --- | --- |
 | X | @EmilyNMarketing | Emily Nguyen | 7371059 | Password manager, never this file |
 | X | @dublindrforkids | Liam O'Sullivan | 7371093 | Password manager, never this file |
 | Instagram | drarlettabrown | Arletta Brown | 7599412 | Cleared for seeding (Oct 2026). Credentials in password manager |
+| X | @arlettabrown353 | Arletta Brown (second account) | Not connected | Cleared for seeding (2026-10-08). **Not in Sprout**, so send from X directly in the browser. Credentials in password manager |
+
+Tweets from @arlettabrown353 to @SecurePatientIT already show up in the SPT
+inbox (Sep 30 and Oct 7). They're ours, not a real third party's.
 
 ## Second demo brand: Snouts, Paws & Tails
 Pet care brand with the widest network coverage in the tenant: Facebook,
@@ -56,6 +65,14 @@ A few profiles in this group look like leftovers from other demos (LinkedIn
 Ad accounts and Yelp aren't available through the API.
 
 ## Groups, users, and roles
+Users, teams, queues, tags, and listening topics are in the generated
+[tenant-index.md](tenant-index.md). Refresh it rather than copying lists here.
+Notes the API can't tell you:
+
+- Users are Sprout staff on a shared tenant. Never copy names or emails into this repo
+- Tag `4162648` is an active SPT campaign named after a real health system, left from an earlier demo. Not ours to remove, but **never apply it to seeded drafts** and keep it off screen
+- No vertical seeding tag exists yet (the API can't create one, so an SE adds it by hand)
+
 | User (persona) | Role / permissions | Used to demo |
 | --- | --- | --- |
 | TODO | | Approval workflow |
@@ -67,14 +84,16 @@ profiles really show, and use the overlay for any prospect-specific numbers.
 
 ## Pre-seeded content
 - Publishing calendar: TODO (how many weeks, which campaigns)
-- Smart Inbox: TODO (volume, message types, sentiment mix)
+- Smart Inbox: TODO (message types, sentiment mix). API read 2026-10-08: the SPT brand profiles logged 100+ messages in the two weeks to Oct 8, mostly the brand's own posts (X, Bluesky, Threads, Instagram) plus a few Instagram comments and X mentions
 - Reports: TODO (which have history, date range)
-- Listening topics: TODO
+- Listening topics: see [tenant-index.md](tenant-index.md#listening-topics)
 - Asset library: TODO
 
 ## Standard click path
 1. TODO
 2. TODO
+
+Desired click paths for specific features live in [`click-paths/`](click-paths/), starting with [Trellis insights → action](click-paths/trellis-insights.md).
 
 ## What can't be changed per prospect (and must be talked around)
 - TODO

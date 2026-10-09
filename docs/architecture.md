@@ -78,8 +78,8 @@ that will touch a tenant. Editing the plan is cheaper than regenerating a pack.
 | Watchability | Logs | SE can watch it happen |
 
 Default: use the API to **read** (inventory, analytics, diagnose) and to create
-reusable per-vertical drafts. Use the browser for everything else, including
-any cleanup.
+reusable per-vertical drafts. Use the browser for everything else. Reddit,
+every deletion, and every publish are browser only, always (CLAUDE.md rule 5).
 For anything that only needs to *look* right for one call (names, logos,
 captions), prefer the overlay. It never writes to the tenant, so there's
 nothing to roll back.

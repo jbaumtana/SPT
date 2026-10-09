@@ -11,6 +11,12 @@ passes.
 
 **Exit:** we know what's automatable via API, what isn't, and who signs off.
 
+## Packaging (in progress)
+- [x] Tenant index generated from the API (`python3 tools/sprout_api.py index`)
+- [x] Playbook template and `add-playbook` skill (`.claude/skills/`)
+- [ ] Browser pass for what the API can't see ([browser-pass.md](browser-pass.md))
+- [x] Wrap as a plugin: `config.json`, `skills/` (tenant-index, add-playbook, demo-plan), marketplace in `.claude-plugin/`
+
 ## Phase 1: Brief → data pack + script (≈2–3 weeks)
 - [ ] Fill in `context/` (baseline, personas, reports, listening, 3 playbooks)
 - [ ] Lock the brief and plan schemas after trying them on 2 real (past) deals
@@ -28,10 +34,10 @@ passes.
 
 ## Phase 3: Hands + reset (≈3–4 weeks, built from scratch, since no tooling exists)
 - [ ] Overlay route: map Sprout demo screens into `app-map.json`, test revert
-- [ ] Thin API client, locked to the demo customer ID
+- [x] Thin API client, locked to the demo customer ID ([`tools/sprout_api.py`](../tools/sprout_api.py)), with the read-only inventory and diff
 - [ ] Seed one reusable draft set per vertical (no prospect names), with every write logged to `manifest.json`
 - [ ] Shared-tenant reservation (calendar or Slack) before any tenant write
-- [ ] Seed one prospect-neutral inbox set per vertical from the seeding personas: two on X, one on Instagram (permanent in Sprout, D8)
+- [ ] Seed one prospect-neutral inbox set per vertical from the seeding personas: three X accounts and one Instagram account (permanent in Sprout, D8)
 - [ ] Reset: mark seeded items Complete, browser cleanup of drafts, before/after inventory diff ([tenant-snapshots.md](tenant-snapshots.md))
 - [ ] Inbox seeding on X from the two fake profiles (cleared by Legal, L3)
 - [ ] Verify step: walk the click path, screenshot each screen, diff against the plan
