@@ -1,6 +1,6 @@
 ---
 name: demo-overlay
-description: Get an approved Sprout demo ready: build the prospect's on-screen branding (overlay), write the run sheet, apply the overlay in Chrome, and revert it afterward. Use when an SE says "build the overlay for <prospect>", "get the demo ready", "make the run sheet", "apply the overlay", or "revert the overlay". Needs an approved plan from demo-plan.
+description: Get an approved Sprout demo ready: build the prospect's on-screen branding (overlay), write the run sheet, apply the overlay in Chrome, and revert it afterward. Use when an SE says "build the overlay for [prospect]", "get the demo ready", "make the run sheet", "apply the overlay", or "revert the overlay". Needs an approved plan from demo-plan.
 ---
 
 # Demo overlay

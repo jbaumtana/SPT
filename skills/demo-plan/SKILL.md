@@ -1,6 +1,6 @@
 ---
 name: demo-plan
-description: Plan a tailored Sprout demo for a prospect on the shared demo tenant, with an SE approval gate before anything is built. Use when an SE says "plan a demo for <company>", "prep a Sprout demo for <prospect>", "start a demo run", "build the demo plan", or "get me ready for my <company> demo". This is the starting point; it hands off to demo-overlay after approval.
+description: Plan a tailored Sprout demo for a prospect on the shared demo tenant, with an SE approval gate before anything is built. Use when an SE says "plan a demo for [company]", "prep a Sprout demo for [prospect]", "start a demo run", "build the demo plan", or "get me ready for my [company] demo". This is the starting point; it hands off to demo-overlay after approval.
 ---
 
 # Plan a Sprout demo

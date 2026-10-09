@@ -1,6 +1,6 @@
 {
   "name": "sprout-demo",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Tailored Sprout Social demos on a shared demo tenant: a generated tenant index, industry playbooks, and a plan-and-approve workflow, browser pass, and overlay.",
   "author": { "name": "jbaumtana" }
 }
