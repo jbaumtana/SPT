@@ -83,9 +83,9 @@ this tenant (D6). It can't be seeded. Keep report screens to what those
 profiles really show, and use the overlay for any prospect-specific numbers.
 
 ## Pre-seeded content
-- Publishing calendar: TODO (how many weeks, which campaigns)
-- Smart Inbox: TODO (message types, sentiment mix). API read 2026-10-08: the SPT brand profiles logged 100+ messages in the two weeks to Oct 8, mostly the brand's own posts (X, Bluesky, Threads, Instagram) plus a few Instagram comments and X mentions
-- Reports: TODO (which have history, date range)
+- Publishing calendar: see [tenant-index-ui.md](tenant-index-ui.md#publishing-calendar-october-2026-month-view) (4 weeks of items, 8 campaigns, some captions name real organizations)
+- Smart Inbox: see [tenant-index-ui.md](tenant-index-ui.md#smart-inbox-spt-profiles-previous-90-days-17-filters-applied) (mostly X @mentions, mostly positive). API read 2026-10-08: the SPT brand profiles logged 100+ messages in the two weeks to Oct 8, mostly the brand's own posts (X, Bluesky, Threads, Instagram) plus a few Instagram comments and X mentions
+- Reports: names in [tenant-index-ui.md](tenant-index-ui.md#reports). History is real data (D6)
 - Listening topics: see [tenant-index.md](tenant-index.md#listening-topics)
 - Asset library: TODO
 
