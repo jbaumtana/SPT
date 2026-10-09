@@ -1,4 +1,10 @@
-/* demo-tailor overlay engine v1.0.0
+/* demo-tailor overlay engine v1.1.0-spt
+ * Copied from the demo-tailor plugin (v1.0.0) and fixed per
+ * docs/overlay-fix-plan.md, Phase 1: in-place text changes (E1), wholeWord
+ * next to punctuation (E2), keyed values (E3), scoped rules claimed once (E4),
+ * idempotent apply (E5), audit() (E6), revert() stops all observers (E7).
+ * Tests: tools/overlay/test_engine.js
+ *
  * Injects prospect-specific branding and content over a running demo app,
  * without touching the app's backend. Idempotent, revertible, survives SPA
  * re-renders via MutationObserver.
@@ -12,15 +18,18 @@
 (function () {
   'use strict';
 
-  var VERSION = '1.0.0';
-  if (window.__demoTailor && window.__demoTailor.version === VERSION) {
-    window.__demoTailor.revert();
+  var VERSION = '1.1.0-spt';
+  /* Revert any engine already on the page, whatever its version, so two
+     observers never run at once. */
+  if (window.__demoTailor && typeof window.__demoTailor.revert === 'function') {
+    try { window.__demoTailor.revert(); } catch (e) {}
   }
 
   var DEFAULT_AVOID = ['script', 'style', 'noscript', 'code', 'pre', 'textarea', 'input', 'select'];
   var undoLog = [];
-  var ruleSeen = new WeakMap();   /* element -> Set of selectorRule indices already applied */
-  var ruleCursor = [];            /* per-rule counter so value arrays keep cycling as nodes stream in */
+  var claims = new WeakMap();     /* element -> {claimKey: true}: the first matching selector rule wins (E4) */
+  var appliedText = new WeakMap();/* element -> {action, value} set by a text/html rule, re-applied if the app rewrites it (E1) */
+  var ruleCursor = [];            /* per-rule counter so unkeyed value arrays keep cycling as nodes stream in */
   var observer = null;
   var current = null;
   var applying = false;
@@ -68,8 +77,10 @@
   function buildRegex(rule) {
     if (rule.mode === 'regex') return new RegExp(rule.find, rule.flags || 'g');
     var body = escapeRe(rule.find);
-    if (rule.wholeWord !== false) body = '\\b' + body + '\\b';
-    return new RegExp(body, rule.caseSensitive ? 'g' : 'gi');
+    /* Lookarounds instead of \b, so a find string that starts or ends with
+       punctuation ("[MF]", "@handle", "#tag") still matches (E2). */
+    if (rule.wholeWord !== false) body = '(?<![\\p{L}\\p{N}_])' + body + '(?![\\p{L}\\p{N}_])';
+    return new RegExp(body, rule.caseSensitive ? 'gu' : 'giu');
   }
 
   function applyTextRules(root, rules, avoid) {
@@ -77,11 +88,15 @@
     var compiled = rules.map(function (r) {
       return { re: buildRegex(r), replace: r.replace, caseAware: r.caseAware !== false };
     });
-    var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null);
     var hits = 0;
     var node;
     var batch = [];
-    while ((node = walker.nextNode())) batch.push(node);
+    if (root.nodeType === 3) {
+      batch.push(root);
+    } else {
+      var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null);
+      while ((node = walker.nextNode())) batch.push(node);
+    }
 
     batch.forEach(function (textNode) {
       var value = textNode.nodeValue;
@@ -132,12 +147,31 @@
     return hits;
   }
 
-  function markSeen(el, ri) {
-    var set = ruleSeen.get(el);
-    if (!set) { set = {}; ruleSeen.set(el, set); }
-    if (set[ri]) return false;
-    set[ri] = true;
+  /* An element is changed by at most one selector rule per action/target. */
+  function claim(el, key) {
+    var set = claims.get(el);
+    if (!set) { set = {}; claims.set(el, set); }
+    if (set[key]) return false;
+    set[key] = true;
     return true;
+  }
+
+  /* FNV-1a: the same key always picks the same value, across redraws and reloads (E3). */
+  function hashKey(s) {
+    var h = 2166136261;
+    for (var i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); }
+    return h >>> 0;
+  }
+
+  function pickValue(rule, ri, el, values) {
+    if (rule.keyAttr) {
+      var holder = el.closest(rule.keyClosest || ('[' + rule.keyAttr + ']'));
+      var key = holder && holder.getAttribute(rule.keyAttr);
+      if (key) return values[hashKey(key) % values.length];
+    }
+    var v = values[ruleCursor[ri] % values.length];
+    ruleCursor[ri]++;
+    return v;
   }
 
   /* Snapshot an element's children so text/html edits can be reverted exactly,
@@ -152,24 +186,33 @@
 
   function applySelectorRules(rules) {
     var hits = 0;
-    (rules || []).forEach(function (rule, ri) {
+    /* Scoped rules run first so they claim their elements before general ones (E4). */
+    var ordered = (rules || []).map(function (rule, ri) { return { rule: rule, ri: ri }; })
+      .sort(function (a, b) { return (b.rule.scope ? 1 : 0) - (a.rule.scope ? 1 : 0) || a.ri - b.ri; });
+    ordered.forEach(function (o) {
+      var rule = o.rule, ri = o.ri;
       var els;
       try { els = document.querySelectorAll(rule.selector); } catch (e) { return; }
       if (ruleCursor[ri] === undefined) ruleCursor[ri] = 0;
+      var claimKey = rule.action + ':' + (rule.attr || rule.styleProp || '');
       Array.prototype.forEach.call(els, function (el, i) {
         if (typeof rule.index === 'number' && rule.index !== i) return;
-        if (!markSeen(el, ri)) return;
+        if (rule.scope) {
+          try { if (!el.closest(rule.scope)) return; } catch (e) { return; }
+        }
+        if (!claim(el, claimKey)) return;
         var values = Array.isArray(rule.value) ? rule.value : [rule.value];
-        var value = values[ruleCursor[ri] % values.length];
-        ruleCursor[ri]++;
+        var value = pickValue(rule, ri, el, values);
         switch (rule.action) {
           case 'text':
             recordChildren(el);
             el.textContent = value;
+            appliedText.set(el, { action: 'text', value: value });
             break;
           case 'html':
             recordChildren(el);
             el.innerHTML = value;
+            appliedText.set(el, { action: 'html', value: el.innerHTML });
             break;
           case 'attr':
             record({ el: el, attr: rule.attr }, 'attribute', el.getAttribute(rule.attr));
@@ -223,6 +266,20 @@
     };
   }
 
+  /* If the app rewrote text inside an element a text/html rule set, put our value back (E1). */
+  function reassertApplied(node) {
+    var el = node.nodeType === 1 ? node : node.parentElement;
+    while (el) {
+      var a = appliedText.get(el);
+      if (a) {
+        if (a.action === 'text' && el.textContent !== a.value) el.textContent = a.value;
+        if (a.action === 'html' && el.innerHTML !== a.value) el.innerHTML = a.value;
+        return;
+      }
+      el = el.parentElement;
+    }
+  }
+
   function startObserver() {
     if (observer) observer.disconnect();
     observer = new MutationObserver(function (mutations) {
@@ -230,23 +287,34 @@
       applying = true;
       try {
         var added = [];
+        var changedText = [];
         mutations.forEach(function (m) {
+          if (m.type === 'characterData') {
+            if (m.target.isConnected) changedText.push(m.target);
+            return;
+          }
           Array.prototype.forEach.call(m.addedNodes, function (n) {
             if (n.nodeType === 1) added.push(n);
             else if (n.nodeType === 3 && n.parentElement) added.push(n.parentElement);
           });
+          if (m.target && m.target.nodeType === 1) changedText.push(m.target);
         });
-        if (!added.length) return;
-        if (current && current.selectorRules) applySelectorRules(current.selectorRules);
+        if (added.length && current && current.selectorRules) applySelectorRules(current.selectorRules);
+        changedText.forEach(function (n) { if (n.isConnected) reassertApplied(n); });
         added.forEach(function (n) { if (n.isConnected) runPass(n); });
+        changedText.forEach(function (n) { if (n.isConnected && n.nodeType === 3) runPass(n); });
       } finally {
+        /* Drop the mutations our own writes just caused, so the engine never triggers itself. */
+        if (observer) observer.takeRecords();
         applying = false;
       }
     });
-    observer.observe(document.documentElement, { childList: true, subtree: true, characterData: false });
+    observer.observe(document.documentElement, { childList: true, subtree: true, characterData: true });
   }
 
   function apply(payload) {
+    /* Applying twice equals applying once (E5). */
+    if (current || undoLog.length) revert();
     current = payload || {};
     applying = true;
     var stats;
@@ -275,6 +343,7 @@
         } else if (e.prop === 'style') {
           if (!e.original) e.target.el.style.removeProperty(e.target.styleProp);
           else e.target.el.style.setProperty(e.target.styleProp, e.original);
+          if (e.target.el.getAttribute('style') === '') e.target.el.removeAttribute('style');
         } else if (e.prop === 'children') {
           while (e.target.firstChild) e.target.removeChild(e.target.firstChild);
           e.target.appendChild(e.original.cloneNode(true));
@@ -286,7 +355,8 @@
       } catch (err) {}
     }
     undoLog = [];
-    ruleSeen = new WeakMap();
+    claims = new WeakMap();
+    appliedText = new WeakMap();
     ruleCursor = [];
     current = null;
     return { ok: true, reverted: true };
@@ -323,6 +393,32 @@
     return { url: location.href, title: document.title, strings: strings, images: images };
   }
 
+  /* Visible leftovers after apply(): literal deny strings (case-insensitive)
+     and regex patterns. Same visibility rules as scan() (E6). */
+  function audit(opts) {
+    opts = opts || {};
+    var res = [];
+    var deny = (opts.deny || []).map(function (d) { return new RegExp(escapeRe(d), 'gi'); });
+    var pats = (opts.patterns || []).map(function (p) { return new RegExp(p, 'g'); });
+    var walker = document.createTreeWalker(opts.root || document.body, NodeFilter.SHOW_TEXT, null);
+    var node;
+    while ((node = walker.nextNode())) {
+      if (skip(node, DEFAULT_AVOID)) continue;
+      var el = node.parentElement;
+      if (!el || !el.offsetParent) continue;
+      var t = node.nodeValue || '';
+      deny.concat(pats).forEach(function (re) {
+        re.lastIndex = 0;
+        var m;
+        while ((m = re.exec(t))) {
+          res.push({ match: m[0], text: t.trim().slice(0, 120), selector: cssPath(el) });
+          if (!m[0]) re.lastIndex++;
+        }
+      });
+    }
+    return res;
+  }
+
   function cssPath(el) {
     if (!el) return '';
     if (el.id) return '#' + CSS.escape(el.id);
@@ -343,6 +439,7 @@
     apply: apply,
     revert: revert,
     scan: scan,
+    audit: audit,
     cssPath: cssPath,
     status: function () {
       return { version: VERSION, active: !!current, undoEntries: undoLog.length, observing: !!observer };

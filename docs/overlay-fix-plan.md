@@ -10,6 +10,8 @@ The BCBSA test run found problems the headless test missed. Part of the cause is
 
 ## Phase 1: Engine (`overlay-engine.js`)
 
+**Status: E1–E7 done (2026-10-09).** The engine now lives at `tools/overlay/overlay-engine.js` (v1.1.0-spt), with tests in `tools/overlay/test_engine.js`. Synthetic fixtures for now; S3 swaps in real-page copies.
+
 | # | Problem seen | Fix | Test |
 |---|---|---|---|
 | E1 | **Old names came back.** React rewrote the topic page title in place, and "Healthcare Tech Industry" returned because the observer only watches for added and removed elements. | Also watch for in-place text changes (`characterData: true`) and re-run the text rules on just that text. Pause watching while the engine writes, so it doesn't trigger itself. | Fixture: change a text node's value after `apply()` and check the replacement holds. |
