@@ -9,6 +9,11 @@ A playbook holds what's true for **every** prospect in one vertical. The
 tenant index holds what's in the tenant. The prospect layer lives in `runs/`.
 Keep the three apart.
 
+**Where to work.** Playbooks are shared, so they're written in a clone of
+`jbaumtana/spt` (the current folder has `context/tenant-index.md`) and
+committed. Without a clone, read from `${CLAUDE_PLUGIN_ROOT}/context/` and give
+the SE the finished playbook to add through a pull request.
+
 ## Steps
 
 1. **Read first:** `context/playbooks/_template.md`, the existing playbooks in

@@ -1,0 +1,6 @@
+{
+  "extraKnownMarketplaces": {
+    "spt": { "source": { "source": "github", "repo": "jbaumtana/spt" } }
+  },
+  "enabledPlugins": { "sprout-demo@spt": true }
+}

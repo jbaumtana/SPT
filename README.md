@@ -74,9 +74,36 @@ context/                  The context layer (what a good Sprout demo contains)
 schemas/                  Prospect brief + demo plan (the approval artifact)
 examples/                 A worked fictional example of each
 docs/                     Architecture, roadmap, guardrails, open questions
-tools/                    Sprout API client (locked to the demo tenant), inventory, diff
+tools/                    Sprout API client (locked to the tenant in config.json), index, inventory, diff
+skills/                   Plugin skills: tenant-index, add-playbook, demo-plan
+.claude-plugin/           Plugin + marketplace manifests
+config.json               Which tenant the plugin works on
 runs/                     One folder per demo run (git-ignored, may hold prospect info)
 ```
+
+## Install as a plugin
+
+The repo is also a Claude plugin (`sprout-demo`) and its own marketplace (`spt`).
+
+- **Claude Code:** `/plugin marketplace add jbaumtana/spt`, then `/plugin install sprout-demo@spt`
+  (or `/plugin install sprout-demo --marketplace jbaumtana/spt` on 2.1.275+). Opening a clone of
+  this repo offers it automatically (`.claude/settings.json`).
+- **Claude Desktop / Cowork:** Customize → Plugins → add the `jbaumtana/spt` marketplace.
+
+Always install from GitHub (`jbaumtana/spt`), never from a local folder: a local install copies
+everything in the folder, including git-ignored prospect files in `runs/` and any `.env`.
+
+| Skill | Say | Does |
+| --- | --- | --- |
+| `tenant-index` | "what's in the demo tenant?", "refresh the tenant index" | Reads or regenerates `context/tenant-index.md` from the API |
+| `add-playbook` | "add a playbook for retail" | Writes `context/playbooks/<vertical>.md` with a Tenant fit checked against the index |
+| `demo-plan` | "plan a demo for <company>" | Brief → plan → stops for SE approval → hands off to demo-tailor |
+
+**Who changes what:** the index is generated, never hand-edited. Industries are
+added as playbooks through pull requests. Prospect work stays in `runs/`, which
+is never committed. To point the plugin at another tenant, change `config.json`
+and refresh the index. Pairs with the `demo-tailor` plugin (research, data
+pack, overlay, talk track).
 
 ## Getting started
 

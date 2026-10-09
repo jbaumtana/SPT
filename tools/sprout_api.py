@@ -1,7 +1,7 @@
 """Thin Sprout API client, locked to the demo tenant.
 
 What it will do (CLAUDE.md rules 1, 2, 5, 6):
-- Talk to customer 2160354 only. Any other customer ID is refused.
+- Talk to the one customer in config.json only. Any other customer ID is refused.
 - Send only the calls on ALLOWED: reads, plus creating drafts and uploading
   media for them. There's no delete, update, or publish call to send, and
   those stay browser-only even if the API adds them.
@@ -36,12 +36,15 @@ import urllib.request
 import uuid
 from pathlib import Path
 
-CUSTOMER_ID = 2160354
+# Tenant settings live in config.json at the repo (plugin) root; SPT_CONFIG overrides the path.
+CONFIG = json.loads(Path(os.environ.get("SPT_CONFIG") or Path(__file__).resolve().parent.parent / "config.json").read_text())
+CUSTOMER_ID = int(CONFIG["customer_id"])
+DEMO_BRAND_GROUP_ID = int(CONFIG["demo_brand_group_id"])
 BASE_URL = "https://api.sproutsocial.com"
 
 # Active tag named after a real health system, left from an earlier demo.
 # Not ours to remove, so never apply it (context/tenant-baseline.md).
-BLOCKED_TAG_IDS = {4162648}
+BLOCKED_TAG_IDS = {int(t) for t in CONFIG.get("blocked_tag_ids", [])}
 
 # Reddit is browser-only (CLAUDE.md rule 5). Matched on network_type prefix.
 BROWSER_ONLY_NETWORK_PREFIXES = ("reddit",)
@@ -50,7 +53,7 @@ BROWSER_ONLY_NETWORK_PREFIXES = ("reddit",)
 NO_MESSAGES_NETWORK_PREFIXES = ("reddit", "yelp", "trustpilot", "tripadvisor", "glassdoor")
 
 # Seeding personas (context/tenant-baseline.md), matched on from.screen_name.
-PERSONA_SCREEN_NAMES = {"emilynmarketing", "dublindrforkids", "drarlettabrown", "arlettabrown353"}
+PERSONA_SCREEN_NAMES = {s.lower() for s in CONFIG.get("persona_screen_names", [])}
 
 _CID = str(CUSTOMER_ID)
 ALLOWED = [
@@ -352,9 +355,9 @@ def inventory(client, days=14, manifest_path=None):
     # Inbox: messages from the seeding personas to the demo brand profiles.
     profiles = client.profiles()
     brand_ids = [pid for pid, p in profiles.items()
-                 if 2510938 in [int(g) for g in p.get("groups", [])]
+                 if DEMO_BRAND_GROUP_ID in [int(g) for g in p.get("groups", [])]
                  and not str(p["network_type"]).lower().startswith(NO_MESSAGES_NETWORK_PREFIXES)]
-    msgs = client.messages(["group_id.eq(2510938)", f"customer_profile_id.eq({', '.join(map(str, brand_ids))})",
+    msgs = client.messages([f"group_id.eq({DEMO_BRAND_GROUP_ID})", f"customer_profile_id.eq({', '.join(map(str, brand_ids))})",
                             f"created_time.in({_filter_time(start)}..{_filter_time(end)})"], fields=MESSAGE_FIELDS + ["guid"])
     inv["persona_messages"] = {
         m["guid"]: {"created_time": m.get("created_time"), "post_type": m.get("post_type"),
