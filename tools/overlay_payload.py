@@ -168,14 +168,19 @@ def main(argv=None):
     sub = ap.add_subparsers(dest="cmd", required=True)
     b = sub.add_parser("build")
     b.add_argument("data")
+    for sp in (b,):
+        sp.add_argument("--app-map", help="selector map to use instead of the bundled one")
+        sp.add_argument("--ui-index", help="tenant-index-ui.md to use instead of the bundled one")
     c = sub.add_parser("check")
     c.add_argument("payload")
     c.add_argument("--data")
+    c.add_argument("--ui-index", help="tenant-index-ui.md to use instead of the bundled one")
     args = ap.parse_args(argv)
-    ui_text = UI_INDEX.read_text() if UI_INDEX.exists() else None
+    ui_path = Path(args.ui_index) if args.ui_index else UI_INDEX
+    ui_text = ui_path.read_text() if ui_path.exists() else None
     if args.cmd == "build":
         data = json.loads(Path(args.data).read_text())
-        payload, warnings = build(data, json.loads(APP_MAP.read_text()))
+        payload, warnings = build(data, json.loads((Path(args.app_map) if args.app_map else APP_MAP).read_text()))
         problems = check(payload, data, ui_text)
         for w in warnings:
             print(f"warning: {w}")

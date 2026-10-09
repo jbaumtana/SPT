@@ -7,10 +7,11 @@ description: Refresh or read the index of what's in the Sprout demo tenant (grou
 
 The index is generated from the Sprout API and never edited by hand.
 
-**Where to work.** If the current folder contains `context/tenant-index.md`,
-it's a clone of the repo: read and write there. Otherwise read
-`${CLAUDE_PLUGIN_ROOT}/context/tenant-index.md`, which is a read-only copy, and
-tell the SE that refreshing needs a clone of `jbaumtana/spt`.
+**Where to work.** Most users only read the index: use the bundled copy of
+`context/tenant-index.md`. Refreshing needs the Sprout API token and a clone of
+`jbaumtana/spt`, which is a job for a tenant admin or the plugin owner. If an
+SE asks for a refresh and there's no token, say so in plain language and ask them
+to request one from the owner. Don't show commands.
 
 ## Read it
 Answer from `context/tenant-index.md` plus the hand-written notes in
