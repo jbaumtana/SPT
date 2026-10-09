@@ -1,5 +1,5 @@
 # Playbook: Healthcare
-Last updated: 2026-10-07 · Demos run: 0 · Won: 0 · **Status: starting hypotheses, validate on real deals**
+Last updated: 2026-10-09 · Demos run: 0 · Won: 0 · **Status: starting hypotheses, validate on real deals**
 
 ## Buyer map
 Marketing/comms director (owner), social manager (daily user), patient
@@ -22,7 +22,11 @@ From [tenant-index.md](../tenant-index.md).
 - **Listening topics:** Secure Patient Tech (Brand Health), Healthcare Tech Industry (Industry Insights)
 - **Campaign tags:** Tech - Compliance Campaign (`3867977`), Patient Portal Launch (`4357351`), Community Hypertension Program (`4187011`), Tech - Hiring Campaign (`3867987`). Never `4162648`
 - **Inbox:** seeding personas in SPT Personas (`2708092`) message @SecurePatientIT
+- **Screens:** Publishing calendar (`/publishing/calendar`), Approvals (`/publishing/approval/`, workflow "Compliance Approval Workflow - Step 1"), Smart Inbox (`/messages/smart`), Reports (`/reports/home/all`), Listening (`/listening/`). Selectors for Inbox, Listening, and Reports aren't in `click-paths/app-map.json` yet, so an overlay there needs a fresh browser pass
 - **Gaps:** no Facebook or Google Business in this group, so per-location Google Business stays out of the click path (or overlay only). Health plans (payers) say "members", not "patients", and have no facilities or service lines
+- **Facility and service-line accounts don't exist** in the tenant (only the four parent-brand profiles above). Show them through the overlay or drop them from the plan; never write a plan that assumes they're real
+- **No competitor listening topic** in the group. Competitor comparison needs an SE to create a topic or stays out of the plan
+- **Keep off screen:** tag `4162648`, calendar captions that name real organizations, and the "Tech - Security Breach Awareness" campaign (close to any prospect's incident landmine). Check the calendar view before the call
 
 ## Data patterns
 - Content pillars: patient education, community health, provider spotlights, careers/recruiting, events
