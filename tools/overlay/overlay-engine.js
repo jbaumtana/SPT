@@ -1,0 +1,353 @@
+/* demo-tailor overlay engine v1.0.0
+ * Injects prospect-specific branding and content over a running demo app,
+ * without touching the app's backend. Idempotent, revertible, survives SPA
+ * re-renders via MutationObserver.
+ *
+ * Usage from Claude in Chrome (javascript_tool):
+ *   1. Paste this whole file to define window.__demoTailor
+ *   2. __demoTailor.scan()            -> inventory of replaceable strings
+ *   3. __demoTailor.apply(payload)    -> apply the overlay
+ *   4. __demoTailor.revert()          -> restore the original demo
+ */
+(function () {
+  'use strict';
+
+  var VERSION = '1.0.0';
+  if (window.__demoTailor && window.__demoTailor.version === VERSION) {
+    window.__demoTailor.revert();
+  }
+
+  var DEFAULT_AVOID = ['script', 'style', 'noscript', 'code', 'pre', 'textarea', 'input', 'select'];
+  var undoLog = [];
+  var ruleSeen = new WeakMap();   /* element -> Set of selectorRule indices already applied */
+  var ruleCursor = [];            /* per-rule counter so value arrays keep cycling as nodes stream in */
+  var observer = null;
+  var current = null;
+  var applying = false;
+
+  function isEditable(node) {
+    var el = node.nodeType === 1 ? node : node.parentElement;
+    while (el) {
+      if (el.isContentEditable) return true;
+      el = el.parentElement;
+    }
+    return false;
+  }
+
+  function skip(node, avoid) {
+    var el = node.nodeType === 1 ? node : node.parentElement;
+    if (!el) return true;
+    if (el.closest('[data-demo-tailor-skip]')) return true;
+    for (var i = 0; i < avoid.length; i++) {
+      try { if (el.closest(avoid[i])) return true; } catch (e) {}
+    }
+    return isEditable(node);
+  }
+
+  function record(target, prop, original) {
+    undoLog.push({ target: target, prop: prop, original: original });
+  }
+
+  function escapeRe(s) {
+    return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  }
+
+  /* Preserve the casing shape of the matched text: ACME -> NORTHWIND,
+     Acme -> Northwind, acme -> northwind. */
+  function matchCase(matched, replacement) {
+    if (matched === matched.toUpperCase() && matched !== matched.toLowerCase()) {
+      return replacement.toUpperCase();
+    }
+    if (matched === matched.toLowerCase()) return replacement.toLowerCase();
+    if (matched[0] === matched[0].toUpperCase()) {
+      return replacement.charAt(0).toUpperCase() + replacement.slice(1);
+    }
+    return replacement;
+  }
+
+  function buildRegex(rule) {
+    if (rule.mode === 'regex') return new RegExp(rule.find, rule.flags || 'g');
+    var body = escapeRe(rule.find);
+    if (rule.wholeWord !== false) body = '\\b' + body + '\\b';
+    return new RegExp(body, rule.caseSensitive ? 'g' : 'gi');
+  }
+
+  function applyTextRules(root, rules, avoid) {
+    if (!rules.length) return 0;
+    var compiled = rules.map(function (r) {
+      return { re: buildRegex(r), replace: r.replace, caseAware: r.caseAware !== false };
+    });
+    var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null);
+    var hits = 0;
+    var node;
+    var batch = [];
+    while ((node = walker.nextNode())) batch.push(node);
+
+    batch.forEach(function (textNode) {
+      var value = textNode.nodeValue;
+      if (!value || !value.trim()) return;
+      if (skip(textNode, avoid)) return;
+      var next = value;
+      compiled.forEach(function (c) {
+        next = next.replace(c.re, function (m) {
+          return c.caseAware ? matchCase(m, c.replace) : c.replace;
+        });
+      });
+      if (next !== value) {
+        record(textNode, 'nodeValue', value);
+        textNode.nodeValue = next;
+        hits++;
+      }
+    });
+    return hits;
+  }
+
+  var TEXT_ATTRS = ['placeholder', 'alt', 'title', 'aria-label'];
+
+  function applyAttrRules(root, rules, avoid) {
+    if (!rules.length) return 0;
+    var compiled = rules.map(function (r) {
+      return { re: buildRegex(r), replace: r.replace, caseAware: r.caseAware !== false };
+    });
+    var hits = 0;
+    var els = root.querySelectorAll('*');
+    Array.prototype.forEach.call(els, function (el) {
+      if (skip(el, avoid.filter(function (a) { return a !== 'input' && a !== 'textarea'; }))) return;
+      TEXT_ATTRS.forEach(function (attr) {
+        var v = el.getAttribute && el.getAttribute(attr);
+        if (!v) return;
+        var next = v;
+        compiled.forEach(function (c) {
+          next = next.replace(c.re, function (m) {
+            return c.caseAware ? matchCase(m, c.replace) : c.replace;
+          });
+        });
+        if (next !== v) {
+          record({ el: el, attr: attr }, 'attribute', v);
+          el.setAttribute(attr, next);
+          hits++;
+        }
+      });
+    });
+    return hits;
+  }
+
+  function markSeen(el, ri) {
+    var set = ruleSeen.get(el);
+    if (!set) { set = {}; ruleSeen.set(el, set); }
+    if (set[ri]) return false;
+    set[ri] = true;
+    return true;
+  }
+
+  /* Snapshot an element's children so text/html edits can be reverted exactly,
+     even after later text rules replace the nodes we created. */
+  function recordChildren(el) {
+    var frag = document.createDocumentFragment();
+    Array.prototype.slice.call(el.childNodes).forEach(function (n) {
+      frag.appendChild(n.cloneNode(true));
+    });
+    record(el, 'children', frag);
+  }
+
+  function applySelectorRules(rules) {
+    var hits = 0;
+    (rules || []).forEach(function (rule, ri) {
+      var els;
+      try { els = document.querySelectorAll(rule.selector); } catch (e) { return; }
+      if (ruleCursor[ri] === undefined) ruleCursor[ri] = 0;
+      Array.prototype.forEach.call(els, function (el, i) {
+        if (typeof rule.index === 'number' && rule.index !== i) return;
+        if (!markSeen(el, ri)) return;
+        var values = Array.isArray(rule.value) ? rule.value : [rule.value];
+        var value = values[ruleCursor[ri] % values.length];
+        ruleCursor[ri]++;
+        switch (rule.action) {
+          case 'text':
+            recordChildren(el);
+            el.textContent = value;
+            break;
+          case 'html':
+            recordChildren(el);
+            el.innerHTML = value;
+            break;
+          case 'attr':
+            record({ el: el, attr: rule.attr }, 'attribute', el.getAttribute(rule.attr));
+            el.setAttribute(rule.attr, value);
+            break;
+          case 'style':
+            record({ el: el, styleProp: rule.styleProp }, 'style', el.style.getPropertyValue(rule.styleProp));
+            el.style.setProperty(rule.styleProp, value, 'important');
+            break;
+          case 'hide':
+            record({ el: el, styleProp: 'display' }, 'style', el.style.getPropertyValue('display'));
+            el.style.setProperty('display', 'none', 'important');
+            break;
+          default:
+            return;
+        }
+        hits++;
+      });
+    });
+    return hits;
+  }
+
+  function applyCssVars(vars) {
+    if (!vars) return 0;
+    var root = document.documentElement;
+    var n = 0;
+    Object.keys(vars).forEach(function (k) {
+      record({ el: root, styleProp: k }, 'style', root.style.getPropertyValue(k));
+      root.style.setProperty(k, vars[k], 'important');
+      n++;
+    });
+    return n;
+  }
+
+  function injectCss(css) {
+    if (!css) return;
+    var tag = document.createElement('style');
+    tag.id = 'demo-tailor-css';
+    tag.setAttribute('data-demo-tailor-skip', '');
+    tag.textContent = css;
+    document.head.appendChild(tag);
+    record({ el: tag }, 'remove', null);
+  }
+
+  function runPass(root) {
+    if (!current) return { text: 0, attrs: 0 };
+    var avoid = (current.avoidSelectors || DEFAULT_AVOID);
+    return {
+      text: applyTextRules(root, current.textRules || [], avoid),
+      attrs: applyAttrRules(root, current.attrRules || current.textRules || [], avoid)
+    };
+  }
+
+  function startObserver() {
+    if (observer) observer.disconnect();
+    observer = new MutationObserver(function (mutations) {
+      if (applying) return;
+      applying = true;
+      try {
+        var added = [];
+        mutations.forEach(function (m) {
+          Array.prototype.forEach.call(m.addedNodes, function (n) {
+            if (n.nodeType === 1) added.push(n);
+            else if (n.nodeType === 3 && n.parentElement) added.push(n.parentElement);
+          });
+        });
+        if (!added.length) return;
+        if (current && current.selectorRules) applySelectorRules(current.selectorRules);
+        added.forEach(function (n) { if (n.isConnected) runPass(n); });
+      } finally {
+        applying = false;
+      }
+    });
+    observer.observe(document.documentElement, { childList: true, subtree: true, characterData: false });
+  }
+
+  function apply(payload) {
+    current = payload || {};
+    applying = true;
+    var stats;
+    try {
+      stats = { selectors: applySelectorRules(current.selectorRules) };
+      var textStats = runPass(document.body);
+      stats.text = textStats.text;
+      stats.attrs = textStats.attrs;
+      stats.cssVars = applyCssVars(current.cssVars);
+      injectCss(current.injectCss);
+    } finally {
+      applying = false;
+    }
+    startObserver();
+    return { ok: true, version: VERSION, applied: stats, undoEntries: undoLog.length };
+  }
+
+  function revert() {
+    if (observer) { observer.disconnect(); observer = null; }
+    for (var i = undoLog.length - 1; i >= 0; i--) {
+      var e = undoLog[i];
+      try {
+        if (e.prop === 'attribute') {
+          if (e.original === null) e.target.el.removeAttribute(e.target.attr);
+          else e.target.el.setAttribute(e.target.attr, e.original);
+        } else if (e.prop === 'style') {
+          if (!e.original) e.target.el.style.removeProperty(e.target.styleProp);
+          else e.target.el.style.setProperty(e.target.styleProp, e.original);
+        } else if (e.prop === 'children') {
+          while (e.target.firstChild) e.target.removeChild(e.target.firstChild);
+          e.target.appendChild(e.original.cloneNode(true));
+        } else if (e.prop === 'remove') {
+          if (e.target.el && e.target.el.parentNode) e.target.el.parentNode.removeChild(e.target.el);
+        } else {
+          e.target[e.prop] = e.original;
+        }
+      } catch (err) {}
+    }
+    undoLog = [];
+    ruleSeen = new WeakMap();
+    ruleCursor = [];
+    current = null;
+    return { ok: true, reverted: true };
+  }
+
+  /* Inventory the page so the caller can decide what to replace.
+     Returns the most common visible strings plus candidate branded tokens. */
+  function scan(opts) {
+    opts = opts || {};
+    var limit = opts.limit || 120;
+    var counts = {};
+    var walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null);
+    var node;
+    while ((node = walker.nextNode())) {
+      if (skip(node, DEFAULT_AVOID)) continue;
+      var t = (node.nodeValue || '').trim();
+      if (!t || t.length > 120) continue;
+      var el = node.parentElement;
+      if (!el || !el.offsetParent) continue;
+      counts[t] = (counts[t] || 0) + 1;
+    }
+    var strings = Object.keys(counts)
+      .map(function (k) { return { text: k, count: counts[k] }; })
+      .sort(function (a, b) { return b.count - a.count; })
+      .slice(0, limit);
+
+    var images = Array.prototype.slice.call(document.images)
+      .filter(function (im) { return im.offsetParent; })
+      .slice(0, 40)
+      .map(function (im) {
+        return { src: im.currentSrc || im.src, alt: im.alt, w: im.naturalWidth, h: im.naturalHeight, selector: cssPath(im) };
+      });
+
+    return { url: location.href, title: document.title, strings: strings, images: images };
+  }
+
+  function cssPath(el) {
+    if (!el) return '';
+    if (el.id) return '#' + CSS.escape(el.id);
+    var parts = [];
+    while (el && el.nodeType === 1 && parts.length < 5) {
+      var part = el.tagName.toLowerCase();
+      if (el.classList.length) {
+        part += '.' + Array.prototype.slice.call(el.classList).slice(0, 2).map(function (c) { return CSS.escape(c); }).join('.');
+      }
+      parts.unshift(part);
+      el = el.parentElement;
+    }
+    return parts.join(' > ');
+  }
+
+  window.__demoTailor = {
+    version: VERSION,
+    apply: apply,
+    revert: revert,
+    scan: scan,
+    cssPath: cssPath,
+    status: function () {
+      return { version: VERSION, active: !!current, undoEntries: undoLog.length, observing: !!observer };
+    }
+  };
+
+  return window.__demoTailor.status();
+})();
