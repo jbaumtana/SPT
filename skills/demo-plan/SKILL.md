@@ -39,5 +39,8 @@ in a clone, `python3 ${CLAUDE_PLUGIN_ROOT}/tools/sprout_api.py` otherwise.
 6. **After approval:** take a before inventory
    (`python3 tools/sprout_api.py inventory --out runs/<run>/inventory-before.json --run runs/<run>`),
    then demo-tailor `demo-data-pack` and `demo-narrative` into the run folder.
+   Build the overlay with `python3 tools/overlay_payload.py build runs/<run>/data-pack/demo-data.json`
+   (it validates before writing), not by hand.
    The live overlay (`demo-overlay`) needs a session on the SE's computer with
-   Claude in Chrome. Finish with an after inventory and `diff`.
+   Claude in Chrome. Inject `tools/overlay/overlay-engine.js` from this repo
+   (the fixed copy), not demo-tailor's own engine. Finish with an after inventory and `diff`.

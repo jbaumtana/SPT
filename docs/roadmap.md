@@ -15,6 +15,7 @@ passes.
 - [x] Tenant index generated from the API (`python3 tools/sprout_api.py index`)
 - [x] Playbook template and `add-playbook` skill (`.claude/skills/`)
 - [x] Browser pass for what the API can't see ([browser-pass.md](browser-pass.md)): `context/tenant-index-ui.md`, `context/click-paths/app-map.json`
+- [ ] Overlay fixes from the BCBSA pre-flight ([overlay-fix-plan.md](overlay-fix-plan.md)): engine, selectors, generator, automated pre-flight
 - [x] Wrap as a plugin: `config.json`, `skills/` (tenant-index, add-playbook, demo-plan), marketplace in `.claude-plugin/`
 
 ## Phase 1: Brief → data pack + script (≈2–3 weeks)

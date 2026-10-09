@@ -75,6 +75,9 @@ schemas/                  Prospect brief + demo plan (the approval artifact)
 examples/                 A worked fictional example of each
 docs/                     Architecture, roadmap, guardrails, open questions
 tools/                    Sprout API client (locked to the tenant in config.json), index, inventory, diff
+overlay_payload.py        Builds and checks overlay payloads from a run's demo-data.json
+  overlay/                Overlay engine (fixed copy of demo-tailor's) + browser tests:
+                          NODE_PATH=$(npm root -g) node tools/overlay/test_engine.js
 skills/                   Plugin skills: tenant-index, add-playbook, demo-plan
 .claude-plugin/           Plugin + marketplace manifests
 config.json               Which tenant the plugin works on
