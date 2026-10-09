@@ -136,6 +136,120 @@ const tests = {
     const s = await page.evaluate(() => [document.getElementById('t').textContent, document.getElementById('n').textContent, __demoTailor.status().observing]);
     if (s[0] !== 'Secure Patient Technology' || s[1] !== 'Secure Patient Technology' || s[2]) throw new Error(`got ${JSON.stringify(s)}`);
   },
+
+  async 'V1: image action swaps img src, clears srcset and picture sources, and reverts exactly'(browser) {
+    const page = await setup(browser,
+      '<img id="a" src="seed.png" srcset="seed2.png 2x" sizes="100vw">' +
+      '<picture><source srcset="seed.webp"><img id="b" src="seed.png"></picture>' +
+      '<div id="c" style="background:url(seed.png)"></div>');
+    // The browser re-serialises attribute order and the background shorthand, so compare values, not markup.
+    const snap = () => page.evaluate(() => ({
+      a: ['src', 'srcset', 'sizes'].map((x) => document.getElementById('a').getAttribute(x)),
+      b: [document.getElementById('b').getAttribute('src'), document.querySelector('source').getAttribute('srcset')],
+      c: getComputedStyle(document.getElementById('c')).backgroundImage,
+    }));
+    const original = await snap();
+    await page.evaluate(() => __demoTailor.apply({ selectorRules: [{ selector: 'img, #c', action: 'image', value: 'data:image/png;base64,AA' }] }));
+    const got = await page.evaluate(() => ({
+      a: [document.getElementById('a').getAttribute('src'), document.getElementById('a').hasAttribute('srcset'), document.getElementById('a').hasAttribute('sizes')],
+      b: [document.getElementById('b').getAttribute('src'), document.querySelector('source').hasAttribute('srcset')],
+      c: document.getElementById('c').style.backgroundImage,
+    }));
+    if (got.a[0] !== 'data:image/png;base64,AA' || got.a[1] || got.a[2]) throw new Error(`img: ${JSON.stringify(got.a)}`);
+    if (got.b[0] !== 'data:image/png;base64,AA' || got.b[1]) throw new Error(`picture: ${JSON.stringify(got.b)}`);
+    if (!got.c.includes('data:image/png;base64,AA')) throw new Error(`background: ${got.c}`);
+    await page.evaluate(() => __demoTailor.revert());
+    const after = await snap();
+    if (JSON.stringify(after) !== JSON.stringify(original)) throw new Error(`after revert ${JSON.stringify(after)} != ${JSON.stringify(original)}`);
+  },
+
+  async 'V2: an image the app resets in place is swapped back'(browser) {
+    const page = await setup(browser, '<img id="a" src="seed.png">');
+    await page.evaluate(() => __demoTailor.apply({ selectorRules: [{ selector: '#a', action: 'image', value: 'data:image/png;base64,AA' }] }));
+    await page.evaluate(() => {
+      const i = document.getElementById('a');
+      i.setAttribute('src', 'seed.png');
+      i.setAttribute('srcset', 'seed2.png 2x');
+    });
+    await tick(page);
+    const s = await page.evaluate(() => [document.getElementById('a').getAttribute('src'), document.getElementById('a').hasAttribute('srcset')]);
+    if (s[0] !== 'data:image/png;base64,AA' || s[1]) throw new Error(`got ${JSON.stringify(s)}`);
+  },
+
+  async 'V3: replaceWith hides a canvas and svg and shows our markup; revert restores the page'(browser) {
+    const page = await setup(browser,
+      '<section><div id="c1" class="chart"><canvas width="300" height="120"></canvas></div></section>' +
+      '<section><div id="c2" class="chart"><svg width="300" height="120"><rect width="40" height="90"/></svg></div></section>');
+    const original = await page.evaluate(() => document.documentElement.outerHTML);
+    await page.evaluate(() => __demoTailor.apply({ selectorRules: [
+      { selector: '#c1', action: 'replaceWith', id: 'one', value: '<svg viewBox="0 0 10 10"><title>Sample one</title></svg>' },
+      { selector: '#c2', action: 'replaceWith', id: 'two', value: '<svg viewBox="0 0 10 10"><title>Sample two</title></svg>' },
+    ] }));
+    const s = await page.evaluate(() => ({
+      hidden: ['c1', 'c2'].map((id) => getComputedStyle(document.getElementById(id)).display),
+      reps: [...document.querySelectorAll('[data-demo-tailor-replacement]')].map((r) => r.getAttribute('data-demo-tailor-replacement') + ':' + r.querySelector('title').textContent),
+    }));
+    if (s.hidden.some((d) => d !== 'none')) throw new Error(`originals not hidden: ${s.hidden}`);
+    if (JSON.stringify(s.reps) !== JSON.stringify(['one:Sample one', 'two:Sample two'])) throw new Error(`reps ${JSON.stringify(s.reps)}`);
+    await page.evaluate(() => __demoTailor.revert());
+    const after = await page.evaluate(() => document.documentElement.outerHTML);
+    if (after !== original) throw new Error('page differs after revert');
+  },
+
+  async 'V4: replacement survives the app dropping it and un-hiding the original; a re-rendered chart is replaced once'(browser) {
+    const page = await setup(browser, '<div id="host"><div class="chart" id="orig"><svg width="200" height="80"></svg></div></div>');
+    await page.evaluate(() => __demoTailor.apply({ selectorRules: [{ selector: '.chart', action: 'replaceWith', id: 'k', value: '<b>SAMPLE</b>' }] }));
+    await page.evaluate(() => {
+      document.querySelector('[data-demo-tailor-replacement]').remove();
+      document.getElementById('orig').style.display = '';
+    });
+    await tick(page);
+    let s = await page.evaluate(() => [document.querySelectorAll('[data-demo-tailor-replacement]').length, getComputedStyle(document.getElementById('orig')).display]);
+    if (s[0] !== 1 || s[1] !== 'none') throw new Error(`after drop: ${JSON.stringify(s)}`);
+    await page.evaluate(() => { document.getElementById('host').innerHTML = '<div class="chart" id="fresh"><svg width="200" height="80"></svg></div>'; });
+    await tick(page);
+    s = await page.evaluate(() => [document.querySelectorAll('[data-demo-tailor-replacement]').length, getComputedStyle(document.getElementById('fresh')).display]);
+    if (s[0] !== 1 || s[1] !== 'none') throw new Error(`after re-render: ${JSON.stringify(s)}`);
+  },
+
+  async 'V5: replacement text is not rewritten by text rules'(browser) {
+    const page = await setup(browser, '<div class="chart"><svg width="200" height="80"></svg></div>');
+    await page.evaluate(() => __demoTailor.apply({
+      textRules: [{ find: 'Sample', replace: 'CHANGED' }],
+      selectorRules: [{ selector: '.chart', action: 'replaceWith', value: '<p id="r">Sample</p>' }],
+    }));
+    const t = await page.textContent('#r');
+    if (t !== 'Sample') throw new Error(`got "${t}"`);
+  },
+
+  async 'V6: scan inventories canvas, svg charts (not icons) and background images'(browser) {
+    const page = await setup(browser,
+      '<canvas id="cv" width="300" height="120"></canvas>' +
+      '<svg id="ch" width="300" height="120"><rect width="40" height="90"/><text x="0" y="10">Impressions</text></svg>' +
+      '<svg id="ic" width="16" height="16"><path d="M0 0"/></svg>' +
+      '<div id="bg" style="width:50px;height:50px;background-image:url(seed.png)"></div>');
+    const v = (await page.evaluate(() => __demoTailor.scan())).visuals;
+    if (v.canvas.length !== 1 || v.canvas[0].selector !== '#cv') throw new Error(`canvas ${JSON.stringify(v.canvas)}`);
+    if (v.svg.length !== 1 || v.svg[0].selector !== '#ch' || v.svg[0].texts[0] !== 'Impressions') throw new Error(`svg ${JSON.stringify(v.svg)}`);
+    if (v.backgroundImages.length !== 1 || v.backgroundImages[0].selector !== '#bg') throw new Error(`bg ${JSON.stringify(v.backgroundImages)}`);
+  },
+
+  async 'V7: audit flags denied image sources and charts still showing; clean after replace'(browser) {
+    const page = await setup(browser,
+      '<img id="i" src="https://cdn.example/spt-security.png">' +
+      '<div id="bg" style="width:20px;height:20px;background-image:url(https://cdn.example/spt-hero.png)"></div>' +
+      '<div class="chart" id="c"><canvas width="200" height="80"></canvas></div>');
+    const opts = { denyImages: ['spt-security', 'spt-hero'], charts: ['.chart'] };
+    const before = await page.evaluate((o) => __demoTailor.audit(o), opts);
+    const kinds = before.map((r) => r.kind + ':' + r.selector).sort();
+    if (JSON.stringify(kinds) !== JSON.stringify(['chart:#c', 'image:#bg', 'image:#i'].sort())) throw new Error(`before ${JSON.stringify(kinds)}`);
+    await page.evaluate(() => __demoTailor.apply({ selectorRules: [
+      { selector: '#i, #bg', action: 'image', value: 'data:image/png;base64,AA' },
+      { selector: '.chart', action: 'replaceWith', value: '<i>x</i>' },
+    ] }));
+    const after = await page.evaluate((o) => __demoTailor.audit(o), opts);
+    if (after.length) throw new Error(`after ${JSON.stringify(after)}`);
+  },
 };
 
 (async () => {

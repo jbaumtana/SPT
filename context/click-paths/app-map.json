@@ -56,7 +56,10 @@
     "reports": {
       "url": "/reports/home/all",
       "selectors": {},
-      "notes": "Not scanned. The pass doesn't ask for report selectors."
+      "charts": {},
+      "kpis": {},
+      "images": {},
+      "notes": "Not scanned yet. Run the visuals pass (docs/browser-pass.md) and fill in charts, kpis and images. charts.<key> = {selector, kind: svg|canvas|img|html, report}: the selector is the whole chart container (legend included), not the <svg> or <canvas> inside it. kpis.<key> = selector of the tile's number. images.<key> = selector of one image."
     },
     "trellis": {
       "opensFrom": "Left nav, second icon (scan found it as img inside div.AIAgentNavIcon__TrellisIconContainer)",

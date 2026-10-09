@@ -10,7 +10,27 @@ APP_MAP = {"screens": {
                            "selectors": {"calendarCaption": "span.piece"}},
     "approvals": {"selectors": {"approvalCaption": ".appr", "authorName": ".author"}},
     "composer": {"selectors": {"profileAvatar": "img.av"}},
+    "reports": {"selectors": {}, "charts": {"impressions": {"selector": "#chart-imp", "kind": "canvas"}, "mix": "#chart-mix"},
+                "kpis": {"totalImpressions": "#kpi-imp"}},
 }}
+APP_MAP["screens"]["publishingCalendar"]["images"] = {"thumb": "img.thumb"}
+
+
+def visuals(**over):
+    d = {
+        "overlayVisuals": {"charts": True, "images": True},
+        "workspace": {"name": "Blue Cross Association", "brandColors": {"primary": "#005EB8", "accent": "#00A3E0"}, "logoDataUri": None},
+        "charts": [
+            {"id": "imp", "target": "impressions", "type": "line", "title": "Impressions <by> month",
+             "categories": ["Jul", "Aug", "Sep"], "series": [{"name": "Impressions", "values": [1200, 1500, 1800]}]},
+            {"id": "mix", "target": "mix", "type": "donut", "title": "Network mix",
+             "categories": ["X", "Instagram"], "series": [{"name": "Share", "values": [60, 40]}]},
+        ],
+        "kpis": [{"id": "k1", "target": "totalImpressions", "derivedFrom": {"chart": "imp", "agg": "sum"}}],
+        "images": [{"id": "i1", "screen": "publishingCalendar", "target": "thumb", "action": "swap", "src": "monogram"}],
+    }
+    d.update(over)
+    return data(**d)
 
 
 def data(**over):
@@ -73,6 +93,86 @@ class BuildTests(unittest.TestCase):
         payload, _ = op.build(data(relabels=[["Tech", "X"], ["Tech Marketing Team", "Y"]]), APP_MAP)
         finds = [r["find"] for r in payload["textRules"]]
         self.assertLess(finds.index("Tech Marketing Team"), finds.index("Tech"))
+
+
+class VisualTests(unittest.TestCase):
+    def rules(self, d):
+        payload, warnings = op.build(d, APP_MAP)
+        return payload, warnings, {r.get("_chart") or r.get("_kpi") or r.get("_image"): r for r in payload["selectorRules"]
+                                   if r.get("_chart") or r.get("_kpi") or r.get("_image")}
+
+    def test_off_by_default_even_when_the_data_has_visuals(self):
+        d = visuals(overlayVisuals={})
+        payload, warnings, found = self.rules(d)
+        self.assertEqual(found, {})
+        self.assertTrue(any("charts" in w for w in warnings) and any("images" in w for w in warnings))
+
+    def test_chart_becomes_a_replaceWith_rule_with_escaped_svg(self):
+        _, _, found = self.rules(visuals())
+        imp = found["imp"]
+        self.assertEqual((imp["selector"], imp["action"]), ("#chart-imp", "replaceWith"))
+        self.assertIn("Impressions &lt;by&gt; month", imp["value"])
+        self.assertNotIn("<by>", imp["value"])
+        self.assertTrue(found["mix"]["value"].startswith("<svg"))  # app-map entry given as a bare string
+
+    def test_kpi_is_derived_from_the_chart_so_they_tie_out(self):
+        _, _, found = self.rules(visuals())
+        self.assertEqual(found["k1"]["value"], "4,500")
+        self.assertEqual(found["k1"]["action"], "text")
+
+    def test_kpi_pointing_at_a_missing_chart_fails_the_build(self):
+        d = visuals(kpis=[{"id": "k2", "target": "totalImpressions", "derivedFrom": {"chart": "nope", "agg": "sum"}}])
+        with self.assertRaises(op.PayloadError):
+            op.build(d, APP_MAP)
+
+    def test_series_length_mismatch_fails_the_build(self):
+        d = visuals(charts=[{"id": "imp", "target": "impressions", "type": "bar", "title": "t",
+                             "categories": ["a", "b"], "series": [{"name": "s", "values": [1]}]}], kpis=[])
+        with self.assertRaises(op.PayloadError):
+            op.build(d, APP_MAP)
+
+    def test_missing_selector_is_skipped_loudly(self):
+        d = visuals(charts=[{"id": "x", "target": "unknown", "type": "bar", "title": "t", "categories": ["a"],
+                             "series": [{"name": "s", "values": [1]}]}], kpis=[])
+        _, warnings, found = self.rules(d)
+        self.assertNotIn("x", found)
+        self.assertTrue(any("charts.unknown" in w for w in warnings))
+
+    def test_image_monogram_is_a_data_uri_and_hide_has_no_value(self):
+        d = visuals(images=[{"id": "i1", "screen": "publishingCalendar", "target": "thumb", "action": "swap", "src": "monogram"},
+                            {"id": "i2", "screen": "publishingCalendar", "target": "thumb", "action": "hide"}])
+        _, _, found = self.rules(d)
+        self.assertTrue(found["i1"]["value"].startswith("data:image/svg+xml;base64,"))
+        self.assertEqual(found["i2"]["action"], "hide")
+
+    def test_every_chart_type_draws(self):
+        for kind in ("bar", "line", "donut"):
+            d = visuals(charts=[{"id": "c", "target": "impressions", "type": kind, "title": "t", "categories": ["a", "b"],
+                                 "series": [{"name": "s1", "values": [3, 5]}, {"name": "s2", "values": [2, 4]}]}], kpis=[])
+            _, _, found = self.rules(d)
+            self.assertIn("</svg>", found["c"]["value"])
+
+    def test_built_visual_payload_passes_its_own_check(self):
+        payload, _, _ = self.rules(visuals())
+        self.assertEqual(op.check(payload, visuals()), [])
+
+
+class VisualCheckTests(unittest.TestCase):
+    def rule(self, **kw):
+        return {"textRules": [], "selectorRules": [dict({"selector": ".c", "action": "replaceWith", "value": "<svg/>"}, **kw)]}
+
+    def test_script_and_event_handlers_are_rejected(self):
+        self.assertTrue(op.check(self.rule(value="<svg><script>x</script></svg>")))
+        self.assertTrue(op.check(self.rule(value='<svg onload="x()"/>')))
+
+    def test_external_urls_are_rejected_but_the_svg_namespace_is_fine(self):
+        self.assertTrue(op.check(self.rule(value='<img src="https://cdn.example/a.png">')))
+        self.assertEqual(op.check(self.rule(value='<svg xmlns="http://www.w3.org/2000/svg"/>')), [])
+
+    def test_image_rules_need_a_data_uri(self):
+        self.assertTrue(op.check(self.rule(action="image", value="https://cdn.example/a.png")))
+        self.assertTrue(op.check(self.rule(action="image", value="data:text/html;base64,AA")))
+        self.assertEqual(op.check(self.rule(action="image", value="data:image/png;base64,AA")), [])
 
 
 class CheckTests(unittest.TestCase):

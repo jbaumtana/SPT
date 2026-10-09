@@ -18,7 +18,7 @@ and a confidentiality problem at worst.
 | **B. Fresh tenant per demo** | Provision a new demo tenant each time, throw it away afterward | A way to create tenants and connect profiles quickly | ❌ Probably too slow and manual without tooling |
 | **C. Declarative re-seed** | Write the baseline down as data (`baseline.json`). Reset = delete everything not in the baseline, recreate anything missing | API create **and** delete for each object type | ❌ The API has no delete ([api-coverage.md](api-coverage.md)) |
 | **D. Manifest teardown** | Log every change *we* make in `manifest.json`, then undo exactly those changes in reverse | A way to undo each thing we create | ✅ Still the fit, but the undo runs in the browser (or by hand), since the API can't delete |
-| **E. Overlay only** | Never write to the tenant. Prospect names and copy are swapped in the browser | Nothing (demo-tailor `demo-overlay`) | ✅ Zero reset. But it can't change charts or anything after a hard reload |
+| **E. Overlay only** | Never write to the tenant. Prospect names and copy are swapped in the browser | Nothing (demo-tailor `demo-overlay`) | ✅ Zero reset. Charts and images are replaced on screen by `replaceWith` / `image` rules, so numbers can be fully tailored. But it can't change anything after a hard reload, and exports, PDFs, and emailed reports still show the real data |
 
 ## Recommendation: overlay first, manifest for the rest, an inventory to catch leftovers
 
