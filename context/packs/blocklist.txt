@@ -1,0 +1,22 @@
+# Real organizations and events that must never appear in a generated pack.
+# One term per line, matched case-insensitively as whole words. Lines starting
+# with # are comments. Add to this list; never remove from it without the SE's say-so.
+# Source for the first block: real names seen on the demo tenant (context/tenant-index-ui.md).
+National Patient Advocate Foundation
+NPAF
+WIRED Health
+Fortune's Best Workplaces
+ViVE
+Sprout U
+# Common real health systems and payers (starter list, extend per vertical)
+BCBSA
+Blue Cross
+Blue Shield
+Anthem
+Kaiser
+Mayo Clinic
+Cleveland Clinic
+Aetna
+Cigna
+UnitedHealth
+Humana

@@ -1,0 +1,202 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Demo data pack (demo-data.json)",
+  "description": "The contract between data generation and everything downstream (tools/overlay_payload.py, the Hands workstream, the run sheet). Track A packs live in context/packs/<vertical>/ and are prospect-neutral. Track B packs live in runs/<run>/data-pack/. See docs/workstreams/data-generation.md.",
+  "type": "object",
+  "required": ["meta", "workspace", "profiles", "campaigns", "posts", "users", "inbox", "relabels", "outOfClickPath"],
+  "additionalProperties": false,
+  "properties": {
+    "_note": { "type": "string" },
+    "meta": {
+      "type": "object",
+      "required": ["pack", "track", "version", "generatedOn", "playbook", "prospect", "sentimentMix"],
+      "additionalProperties": false,
+      "properties": {
+        "pack": { "type": "string", "description": "Vertical slug (industry) or run folder name (customer)." },
+        "track": { "enum": ["industry", "customer"] },
+        "version": { "type": "integer", "minimum": 1 },
+        "generatedOn": { "type": "string", "format": "date" },
+        "playbook": { "type": "string", "description": "Path to the playbook this pack was built from." },
+        "basedOnPack": { "type": ["string", "null"], "description": "Customer packs: the industry pack this one derives from." },
+        "prospect": { "type": ["string", "null"], "description": "Must be null for industry packs." },
+        "planPath": { "type": ["string", "null"], "description": "Customer packs: the approved plan.md." },
+        "allowPublic": { "type": "boolean", "description": "Only true when an SE-approved plan lists live publishing. Default false." },
+        "sentimentMix": {
+          "type": "object",
+          "required": ["positive", "neutral", "negative"],
+          "additionalProperties": false,
+          "properties": {
+            "positive": { "type": "integer", "minimum": 0, "maximum": 100 },
+            "neutral": { "type": "integer", "minimum": 0, "maximum": 100 },
+            "negative": { "type": "integer", "minimum": 0, "maximum": 100 }
+          }
+        },
+        "sampleDataNote": { "type": "string", "description": "Internal reminder: generated metrics are never real results, a benchmark, or a promise." }
+      }
+    },
+    "workspace": {
+      "type": "object",
+      "required": ["brandName", "brandColors"],
+      "additionalProperties": false,
+      "properties": {
+        "brandName": { "type": "string" },
+        "brandColors": {
+          "type": "object",
+          "required": ["primary", "accent"],
+          "additionalProperties": false,
+          "properties": {
+            "primary": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" },
+            "accent": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" }
+          }
+        },
+        "logoDataUri": { "type": "string" }
+      }
+    },
+    "profiles": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "network", "handle", "sproutProfileId"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string" },
+          "network": { "enum": ["x", "instagram", "linkedin", "threads", "bluesky"] },
+          "handle": { "type": "string" },
+          "sproutProfileId": { "type": "integer", "minimum": 100000, "description": "Must appear in context/tenant-index.md." },
+          "role": { "type": "string" }
+        }
+      }
+    },
+    "campaigns": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "replaces", "tenantTagId"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "pillar": { "type": "string" },
+          "tenantTagId": { "type": ["integer", "null"], "minimum": 100000, "description": "Existing tenant tag, or null for overlay-label-only." },
+          "replaces": { "type": "array", "items": { "type": "string" }, "description": "Seed labels from context/tenant-index-ui.md that this campaign covers (D2)." }
+        }
+      }
+    },
+    "posts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "status", "network", "pillar", "campaignId", "caption", "pinDate", "dateSensitive", "visibility"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string" },
+          "status": { "enum": ["scheduled", "pending_approval", "draft"] },
+          "network": { "enum": ["x", "instagram", "linkedin", "threads", "bluesky"] },
+          "pillar": { "type": "string" },
+          "campaignId": { "type": "string" },
+          "caption": { "type": "string", "minLength": 1 },
+          "pinDate": { "type": ["string", "null"], "format": "date" },
+          "dateSensitive": { "type": "boolean" },
+          "visibility": { "enum": ["overlay", "draft", "public"], "description": "overlay: on-screen only. draft: may be created as a Sprout draft. public: published live (needs meta.allowPublic)." }
+        }
+      }
+    },
+    "seasonalLibrary": {
+      "type": "array",
+      "description": "Dated copy kept out of the rotation. Customer packs pick from here and set a pinDate.",
+      "items": {
+        "type": "object",
+        "required": ["id", "season", "window", "network", "caption"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string" },
+          "season": { "type": "string" },
+          "window": { "type": "string", "description": "Plain-language window, e.g. 'early autumn'. Not a date." },
+          "network": { "enum": ["x", "instagram", "linkedin", "threads", "bluesky"] },
+          "caption": { "type": "string" }
+        }
+      }
+    },
+    "approvals": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["postId", "workflow", "steps", "requestedBy"],
+        "additionalProperties": false,
+        "properties": {
+          "postId": { "type": "string" },
+          "workflow": { "type": "string" },
+          "requestedBy": { "type": "string" },
+          "steps": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "required": ["name", "approver"],
+              "additionalProperties": false,
+              "properties": { "name": { "type": "string" }, "approver": { "type": "string" } }
+            }
+          }
+        }
+      }
+    },
+    "users": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "role", "isFictional"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "role": { "type": "string" },
+          "isFictional": { "const": true }
+        }
+      }
+    },
+    "inbox": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "network", "type", "senderPersona", "senderHandle", "text", "sentiment", "scenario", "expectedRoute"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string" },
+          "network": { "enum": ["x", "instagram"] },
+          "type": { "enum": ["mention", "dm", "comment"] },
+          "senderPersona": { "enum": ["emily", "liam", "arletta"], "description": "Seeding personas in context/tenant-baseline.md. No other senders." },
+          "senderHandle": { "type": "string" },
+          "text": { "type": "string", "minLength": 1 },
+          "sentiment": { "enum": ["positive", "neutral", "negative"] },
+          "scenario": { "type": "string" },
+          "expectedRoute": { "enum": ["reply", "route-offline", "escalate", "no-reply"], "description": "What the demo should show the care agent doing." },
+          "suggestedReply": { "type": "string" }
+        }
+      }
+    },
+    "listening": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["topic", "talkingPoint"],
+        "additionalProperties": false,
+        "properties": { "topic": { "type": "string" }, "talkingPoint": { "type": "string" } }
+      }
+    },
+    "reportFraming": {
+      "type": "array",
+      "description": "Names must come from context/tenant-index-ui.md. Framing only: never generated metrics.",
+      "items": {
+        "type": "object",
+        "required": ["report", "framing"],
+        "additionalProperties": false,
+        "properties": { "report": { "type": "string" }, "framing": { "type": "string" } }
+      }
+    },
+    "relabels": {
+      "type": "array",
+      "items": { "type": "array", "items": { "type": "string" }, "minItems": 2, "maxItems": 2 }
+    },
+    "outOfClickPath": { "type": "array", "items": { "type": "string" } }
+  }
+}

@@ -14,6 +14,6 @@ Invented names only. Keep them stable across demos so SEs learn the cast.
 
 | Name | Role | Shows up in |
 | --- | --- | --- |
-| TODO | Content creator | Composer, approvals |
-| TODO | Approver | Approvals queue |
-| TODO | Care agent | Smart Inbox |
+| Jordan Ellis | Content creator | Composer, approvals |
+| Morgan Reyes (clinical) and Sam Okafor (compliance) | Approvers | Approvals queue |
+| Casey Lindqvist | Care agent | Smart Inbox |

@@ -50,19 +50,20 @@ Outputs: `demo-data.json` (the source of truth), CSV/paste-ready views, and
 | --- | --- |
 | Playbooks | 3 exist (healthcare, public-sector, travel-hospitality); template and `add-playbook` skill exist. Status: starting hypotheses |
 | Plan schema (`data_to_generate`) | Exists; counts and names only, no per-item shape |
-| `demo-data.json` schema | **Missing.** `overlay_payload.py` reads fields "beyond the data-pack schema", but that schema lives in the external demo-tailor plugin, not this repo |
-| Generator | **Not in this repo.** Lives in the demo-tailor `demo-data-pack` skill. Last run was BCBSA, hand-fixed afterwards |
+| `demo-data.json` schema | Done: [`schemas/demo-data.schema.json`](../../schemas/demo-data.schema.json) |
+| Generator | Done: [`skills/data-pack/`](../../skills/data-pack/SKILL.md), in this repo (decided 2026-11-04) |
+| Pack validator | Done: `tools/check_pack.py` + `tools/test_check_pack.py` (schema, references, tenant IDs, real names, claims, private details, sentiment mix, overlay build) |
 | Overlay payload build and check (D1–D4, D6) | Done, with tests |
 | D5 (neutral thumbnails) | Not started |
 | BCBSA comparison against the hand-fixed payload | Not done; that file isn't in the repo |
-| Track A packs | None generated |
+| Track A packs | **Healthcare v1 done** ([`context/packs/healthcare/`](../../context/packs/healthcare/), committed). Public Sector and Travel & Hospitality not started |
 
 ## Gaps to close (proposed order)
 
-1. **Vendor the `demo-data.json` schema** into `schemas/demo-data.schema.json`, derived from what `overlay_payload.py` reads. Everything else validates against it. This is the contract between generation and the rest of the system.
-2. **Decide where the generator lives.** Keep calling demo-tailor `demo-data-pack`, or bring a Sprout-specific `skills/data-pack/` into this repo. Recommendation: bring it in, because the Sprout rules (no public prospect names, no real people, tenant labels) are hard-coded policy, not preferences.
-3. **Add a pack validator** (`tools/check_pack.py`): schema, no real names, no prospect name in anything marked public, every tenant label covered, sentiment mix matches the plan, counts match `data_to_generate`.
-4. **Generate Track A packs** for the three verticals, prospect-neutral, validated.
+1. ~~**Vendor the `demo-data.json` schema**~~ done into `schemas/demo-data.schema.json`, derived from what `overlay_payload.py` reads. Everything else validates against it. This is the contract between generation and the rest of the system.
+2. ~~**Decide where the generator lives.**~~ decided: in this repo. Keep calling demo-tailor `demo-data-pack`, or bring a Sprout-specific `skills/data-pack/` into this repo. Recommendation: bring it in, because the Sprout rules (no public prospect names, no real people, tenant labels) are hard-coded policy, not preferences.
+3. ~~**Add a pack validator**~~ done: (`tools/check_pack.py`): schema, no real names, no prospect name in anything marked public, every tenant label covered, sentiment mix matches the plan, counts match `data_to_generate`.
+4. **Generate Track A packs** for the other two verticals (Healthcare done), prospect-neutral, validated.
 5. **Track B as a diff on Track A**: customer pack = vertical pack + relabels + pinned copy, so a new prospect is a small change, not a regeneration.
 6. **D5** (optional neutral images) and the BCBSA regression comparison.
 
@@ -89,8 +90,11 @@ From [CLAUDE.md](../../CLAUDE.md) and [guardrails.md](../guardrails.md):
 | Logo and color extraction | Brand kit (block 5, Phase 2); this workstream only consumes it |
 | Overlay engine and selectors | `tools/overlay/` and the browser pass; this workstream only emits the payload |
 
-## Open questions for you
+## Decisions
+- Track A packs are committed (prospect-neutral). Decided 2026-11-04.
+- The generator lives in this repo. Decided 2026-11-04.
+- Healthcare goes first. Decided 2026-11-04.
 
-- Should Track A packs be committed (reusable, shared) or stay local like `runs/`? Proposed: committed, since they're prospect-neutral.
-- Bring the generator into this repo (recommended) or keep depending on demo-tailor?
-- Which vertical first? Healthcare has the most real-run history (BCBSA).
+## Still open
+- Track B has no worked example yet. Next step: derive one from `examples/prospect-brief.example.yaml` and `examples/demo-plan.example.md`.
+- The Healthcare pack's inbox copy and invented user names need an SE read-through before a live demo.

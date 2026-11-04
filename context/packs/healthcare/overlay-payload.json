@@ -1,0 +1,113 @@
+{
+  "_note": "Illustrative sample data. Prospect-neutral industry pack: nothing here describes a real organization, person, or result.",
+  "_generatedBy": "tools/overlay_payload.py",
+  "textRules": [
+    {
+      "find": "Tech - Influencer Marketing Campaign",
+      "replace": "Provider Spotlights",
+      "caseAware": true
+    },
+    {
+      "find": "Compliance Approval Workflow",
+      "replace": "Clinical & Compliance Review",
+      "caseAware": true
+    },
+    {
+      "find": "Tech - Compliance Campaign",
+      "replace": "Privacy & Trust",
+      "caseAware": true
+    },
+    {
+      "find": "Compliance Approval [MF]",
+      "replace": "Clinical & Compliance Review",
+      "caseAware": true
+    },
+    {
+      "find": "Tech - ViVE 2025 Event",
+      "replace": "Community Health Events",
+      "caseAware": true
+    },
+    {
+      "find": "Tech - Hiring Campaign",
+      "replace": "Careers",
+      "caseAware": true
+    },
+    {
+      "find": "Patient Portal Launch",
+      "replace": "Patient Education",
+      "caseAware": true
+    },
+    {
+      "find": "Tech - Webinar Event",
+      "replace": "Community Health Events",
+      "caseAware": true
+    },
+    {
+      "find": "Tech - Infographics",
+      "replace": "Patient Education",
+      "caseAware": true
+    },
+    {
+      "find": "Tech - Executives",
+      "replace": "Provider Spotlights",
+      "caseAware": true
+    },
+    {
+      "find": "Tech - FAQ",
+      "replace": "Patient Education",
+      "caseAware": true
+    }
+  ],
+  "selectorRules": [
+    {
+      "selector": "span[data-qa-message-text]",
+      "action": "text",
+      "value": [
+        "Your visit summary is more than paperwork. Here's a plain-language guide to what's in it, where to find it in the patient portal, and who to ask when something doesn't look right. #PatientEducation #HealthLiteracy",
+        "Swipe through: five questions worth writing down before your next appointment. Your care team wants you to ask. #PatientEducation #AskYourCareTeam",
+        "Primary care, urgent care or the emergency room? Our plain-language guide helps you pick the right door. #PatientEducation",
+        "Quick reminder: for anything personal about your health or your bill, please call the number on your statement or use the secure patient portal. Please don't post private details here. #PatientPrivacy",
+        "How to read your after-visit summary, step by step. Save this for your next appointment. #HealthLiteracy #PatientEducation",
+        "Protecting patient privacy is a team sport. Our compliance and care teams review public posts together before they go live. #PatientPrivacy #Compliance",
+        "Our community walking group meets weekly on the riverside path. All paces welcome, comfortable shoes recommended. #CommunityHealth",
+        "Community health talks are open to everyone. Bring your questions and a neighbor. Details are on our events page. #CommunityHealth",
+        "Our community health team partners with local organizations to bring health education closer to home. #CommunityHealth",
+        "What's one health question you wish more people asked? Tell us below and we'll answer a few in an upcoming post. #CommunityHealth",
+        "Meet the nurse practitioners who lead our primary care clinics. Our spotlight series starts with how they build trust with every patient who walks in. #ProviderSpotlight",
+        "Behind the scenes with our care coordination team: the people who connect the dots between your appointments. #ProviderSpotlight #CareTeam",
+        "Thank you to every nurse, technician and front-desk teammate who makes patients feel welcome. We see you. #CareTeam",
+        "Join a team that puts patients first. We're hiring across nursing, patient access and digital communications. Learn more on our careers page. #NowHiring #HealthcareCareers",
+        "Your next role could be here. See open positions across nursing, patient access and support services. #NowHiring",
+        "A day in the life of a patient access specialist, in 30 seconds. Open roles are on our careers page. #HealthcareCareers",
+        "Join our virtual Q&A with the care team on using your health records online with confidence. Send your questions ahead of time on our events page. #HealthEducation",
+        "Virtual Q&A: how to use your patient portal with confidence. Submit your question ahead of time on our events page. #HealthEducation"
+      ],
+      "keyAttr": "data-qa-msg"
+    },
+    {
+      "selector": "div.sc-fqkvVR.kBmutR > span.sc-fqkvVR.hAIdA-d > div.sc-iGgWBj.gfRiXZ > span > span.seeds-text",
+      "action": "text",
+      "value": [
+        "New guide: reading your lab results online. What the ranges mean, why your care team may have more context, and how to send a secure message with questions. #PatientEducation",
+        "Your visit summary is more than paperwork. Here's a plain-language guide to what's in it, where to find it in the patient portal, and who to ask when something doesn't look right. #PatientEducation #HealthLiteracy",
+        "Swipe through: five questions worth writing down before your next appointment. Your care team wants you to ask. #PatientEducation #AskYourCareTeam",
+        "Primary care, urgent care or the emergency room? Our plain-language guide helps you pick the right door. #PatientEducation",
+        "Quick reminder: for anything personal about your health or your bill, please call the number on your statement or use the secure patient portal. Please don't post private details here. #PatientPrivacy",
+        "How to read your after-visit summary, step by step. Save this for your next appointment. #HealthLiteracy #PatientEducation"
+      ],
+      "_post": "h-p19"
+    }
+  ],
+  "cssVars": {
+    "--brand-primary": "#0B5C8E",
+    "--brand-accent": "#1AA39A"
+  },
+  "avoidSelectors": [
+    "script",
+    "style",
+    "textarea",
+    "input",
+    "[contenteditable]"
+  ],
+  "injectCss": ""
+}
