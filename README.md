@@ -1,4 +1,17 @@
-# Sprout Demo Automation (SPT)
+# Sprout Demo (SPT)
+
+Tailored Sprout demos for SEs, with no code. Works in Claude Cowork.
+
+## For SEs
+1. Install the plugin and give Cowork a folder to save your demo work in.
+2. Say **"Plan a demo for <company>"**. Claude asks a few questions and writes a plan. You approve it.
+3. Say **"Get the demo ready"**. Claude builds the on-screen branding and a run sheet.
+4. With Sprout open in Chrome (Claude in Chrome connected) on Secure Patient Technology, say **"Apply the overlay"**. After the demo say **"Revert the overlay"**.
+5. If a screen isn't covered yet, say **"Run the browser pass"**.
+
+Nothing is posted and nothing in the tenant changes. The tenant is shared, so confirm you've reserved it first.
+
+## For maintainers (Sprout Demo Automation, SPT)
 
 Turn a prospect brief into a tailored, ready-to-run Sprout demo, with an SE
 approving the plan before anything gets built and a clean way to reset afterward.

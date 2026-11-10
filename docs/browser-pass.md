@@ -32,8 +32,77 @@ publishes, or deletes.
 4. **Check its own work:** every report and screen name it wrote must be
    visible in a screenshot. Then commit both files on the current branch.
 
+## Visuals pass: reports, charts, and images
+
+Run this after the main pass, in the same session, only when a plan uses
+`overlay_visuals` or you want charts and thumbnails ready for later. Same rules:
+read-only, nothing saved, sent, or published. Needs `tools/overlay/overlay-engine.js`
+(v1.2.0 or later) injected so `__demoTailor.scan()` returns `visuals`.
+
+### Paste this into the local session
+
+> Read CLAUDE.md and docs/browser-pass.md and do the visuals pass. I'm logged
+> into Sprout in Chrome.
+
+### What the session does
+
+1. **Confirm the tenant** (same as step 1 above), then inject the engine.
+2. **Reports.** Open `/reports/home/all` and write down every report name
+   exactly as listed. Then open **only** the reports the SE names (or, if none
+   are named, the report names in the playbook's Tenant fit). For each one, let it
+   finish loading, then run `__demoTailor.scan()` and read `visuals`:
+   - `visuals.canvas`: the chart is drawn on a canvas. Nothing in it can be edited,
+     so it will be replaced (`replaceWith`).
+   - `visuals.svg`: text (axis labels, legend) is reachable by text rules, but bars,
+     lines, and slices are not. Replace the chart; use text rules only for
+     labels around it.
+   - `visuals.backgroundImages` and `images`: thumbnails and banners.
+3. **For each chart on the page, record in `context/click-paths/app-map.json`**
+   under `screens.reports.charts.<key>`:
+   `{ "selector": "...", "kind": "svg|canvas|img|html", "report": "<report name>" }`
+   - Pick a short `<key>` from what the chart shows (`impressions`, `networkMix`).
+   - The selector must match the **whole chart container**, with its title area
+     excluded and its legend and axes included, not the `<svg>` or `<canvas>` inside it.
+     Test it: `document.querySelectorAll(selector).length` must equal the number
+     of times that chart appears on screen (usually 1).
+   - Prefer `data-qa-*` attributes and ids; use hashed classes only when there is
+     nothing else (S2). Note which kind you used.
+4. **KPI tiles.** For each headline number on the report (total impressions,
+   engagement rate), record the selector of the element holding the number only
+   (no label) under `screens.reports.kpis.<key>`. Confirm it is a plain text
+   element: `document.querySelector(selector).textContent` must be just the number.
+5. **Images.** For each off-message or real-company image on the screens in the
+   main pass (calendar thumbnails, approval card, Reports, Smart Inbox), record
+   the selector under `screens.<screen>.images.<key>`, and note what the image shows
+   in `context/tenant-index-ui.md` (in words; don't save the image). Check the
+   selector hits only the image you mean: `document.querySelectorAll(selector).length`.
+6. **Save a cleaned copy of each chart's page code** (S3) to
+   `context/click-paths/fixtures/<report>-<key>.html`: the container's `outerHTML`
+   with all text replaced by `lorem ipsum`, numbers by `0`, and any `src`,
+   `href`, or `data-` value that holds a real name, email, or id removed. Keep
+   the structure and attributes, since that's what the tests need.
+7. **Hover and redraw check.** Hover one data point (read-only) and note whether a
+   tooltip appears and what element holds it. Also note whether the chart
+   redraws on its own after loading (the engine re-hides it if so). Record both in
+   the chart's `notes` field.
+8. **Check its own work:** run `__demoTailor.apply({selectorRules:[{selector: <chart selector>, action: "replaceWith", value: "<p>TEST</p>"}]})`
+   on one chart, confirm the chart is gone and "TEST" shows in its place, then
+   `__demoTailor.revert()` and confirm the original is back. Then commit
+   `app-map.json`, `tenant-index-ui.md`, and the fixtures on the current branch.
+
+### Then, on the cloud side
+
+Add `charts[]`, `kpis[]`, `images[]` and `"overlayVisuals": {"charts": true, "images": true}`
+to the run's `demo-data.json`, mirror them in `plan.md` under `overlay_visuals` for
+the SE to approve, and run `python3 tools/overlay_payload.py build ...`. The build
+skips any chart or image whose selector isn't in `app-map.json` and says so.
+After applying, check with
+`__demoTailor.audit({denyImages: [...], charts: [<chart selectors>]})`: it lists
+any denied image still showing and any chart still visible.
+
 ## Never
 
 - Click save, send, publish, approve, delete, or anything in Settings
 - Type into a field and leave it saved
 - Copy user names, emails, or message text from real people into the repo
+- Save screenshots or image files of tenant charts or thumbnails into the repo (selectors, a description in words, and the cleaned fixtures only)

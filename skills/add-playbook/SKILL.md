@@ -1,6 +1,6 @@
 ---
 name: add-playbook
-description: Add or update an industry playbook for Sprout demos in context/playbooks/. Use when an SE says "add a playbook for <industry>", "create the <vertical> playbook", "update the healthcare playbook", "save what worked in this demo", or "what playbooks do we have". Maps the vertical onto the real demo tenant using context/tenant-index.md.
+description: Add or update an industry playbook for Sprout demos in context/playbooks/. Use when an SE says "add a playbook for [industry]", "create the [vertical] playbook", "update the healthcare playbook", "save what worked in this demo", or "what playbooks do we have". Maps the vertical onto the real demo tenant using context/tenant-index.md.
 ---
 
 # Add or update a Sprout demo playbook
