@@ -40,6 +40,40 @@
         "voice_notes": { "type": "string" }
       }
     },
+    "overlay_visuals": {
+      "type": "object",
+      "description": "Charts and images the overlay swaps on screen. Both are off unless listed here and approved. Sample data only: never described as the prospect's real results (CLAUDE.md rule 4). Replacements are drawn from the data pack, so numbers on tiles and charts tie out.",
+      "properties": {
+        "charts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["report", "chart", "type", "shows"],
+            "properties": {
+              "report": { "type": "string", "description": "Report name exactly as listed in Reports (context/tenant-index-ui.md)" },
+              "chart": { "type": "string", "description": "Key in app-map.json screens.reports.charts" },
+              "type": { "enum": ["bar", "line", "donut"] },
+              "shows": { "type": "string", "description": "What the drawn chart shows and which pain it answers, e.g. 'monthly impressions rising after launch'" },
+              "kpis": { "type": "array", "items": { "type": "string" }, "description": "KPI tile keys that read from this chart's numbers" }
+            }
+          }
+        },
+        "images": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["screen", "target", "action"],
+            "properties": {
+              "screen": { "type": "string" },
+              "target": { "type": "string", "description": "Key in app-map.json screens.<screen>.images" },
+              "action": { "enum": ["swap", "hide"] },
+              "replacement": { "enum": ["monogram", "generated", "none"], "description": "none when action is hide" },
+              "why": { "type": "string", "description": "What is off-message about the original image" }
+            }
+          }
+        }
+      }
+    },
     "tenant_actions": {
       "type": "array",
       "description": "Everything that would touch a tenant. Empty in Phase 1.",

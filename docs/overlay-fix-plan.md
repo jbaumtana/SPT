@@ -33,7 +33,7 @@ The BCBSA test run found problems the headless test missed. Part of the cause is
 
 ## Phase 3: Data-pack generator (`demo-data-pack`)
 
-**Status: D1, D2, D3 (selector rule ready; waits on the S4 selector), D4, D6 done (2026-10-09)** in `tools/overlay_payload.py` (`build` and `check`), tests in `tools/test_overlay_payload.py`. Pinned captions use `perScope: 1` (engine) so only one post per day gets them. D5 not started. Not yet compared with the hand-fixed payload from the local pre-flight: that file isn't in the repo.
+**Status: D1, D2, D3 (selector rule ready; waits on the S4 selector), D4, D6 done (2026-10-09)** in `tools/overlay_payload.py` (`build` and `check`), tests in `tools/test_overlay_payload.py`. Pinned captions use `perScope: 1` (engine) so only one post per day gets them. D5 and charts: **built (2026-10-09)**, waiting on the visuals pass for selectors (see below). Not yet compared with the hand-fixed payload from the local pre-flight: that file isn't in the repo.
 
 | # | Problem seen | Fix |
 |---|---|---|
@@ -43,6 +43,12 @@ The BCBSA test run found problems the headless test missed. Part of the cause is
 | D4 | **Some seed labels had no rule.** "Tech - FAQ" was patched in by hand. | Coverage check: every campaign, workflow, topic and handle string in `context/tenant-index-ui.md` must have a rule, or be listed as intentionally out of the click path. |
 | D5 | **Off-message images**: SPT security graphics, a "15%" infographic, and a patient in a hospital bed next to a payer statement. | Optional rules that swap calendar and approval thumbnails for generated neutral images, matching the generated monogram, or hide the image on the approval card. These are off by default and switched on per run in `plan.md`. |
 | D6 | **The emitted payload had no validation.** | Run `validate-payload` before writing: escape HTML in `html` values; reject rules where a shorter find string would match inside a longer one listed later (the "Coffee" before "Northwind Coffee" problem); flag `wholeWord` on find strings that end in punctuation (until E2 lands); and run the D1 checks. |
+
+### Visuals (charts, KPI tiles, images): built, waiting on selectors
+
+Engine v1.2.0 adds `image` (img src/srcset/picture, SVG `<image>`, CSS background), `replaceWith` (hide a chart or canvas and inject drawn markup, re-asserted if the app redraws), attribute watching, `scan().visuals`, and `audit({denyImages, charts})`. `overlay_payload.py` draws bar/line/donut SVG from `charts[]` in `demo-data.json`, derives KPI tiles from the same numbers (`kpis[].derivedFrom`), and swaps or hides images (`images[]`). All three are off unless `overlayVisuals` is set, mirroring `overlay_visuals` in the plan schema. `check` rejects scripts, event handlers, external URLs, and non-data image URIs.
+
+**Next:** the visuals pass in [`browser-pass.md`](browser-pass.md) to fill `app-map.json` (`reports.charts`, `reports.kpis`, `*.images`) and save fixtures (S3). Then run the engine tests against those fixtures and re-run a real demo as the acceptance test. Known limits: the drawn chart has no hover tooltips, and a report exported or opened in a new tab shows the real data.
 
 ## Phase 4: Pre-flight automation (`tools/preflight` or a skill step)
 

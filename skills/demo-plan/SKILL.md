@@ -29,6 +29,10 @@ in a clone, `python3 ${CLAUDE_PLUGIN_ROOT}/tools/sprout_api.py` otherwise.
    `runs/<YYYY-MM-DD>-<slug>/brief.yaml` (schema: `schemas/prospect-brief.schema.json`)
    and a readable brief. Mark every inferred pain as an inference.
 4. **Plan.** Write `runs/<run>/plan.md` following `examples/demo-plan.example.md`.
+   If a screen shows a report chart or an off-message image, add an
+   `overlay_visuals` section (schema: `schemas/demo-plan.schema.json`). Charts and
+   images are off unless the plan lists them. Only list charts whose selectors are in
+   `app-map.json`; if they aren't, say the visuals pass has to run first.
    Each screen answers one pain. Use only screens, profiles, topics, and tags
    that appear in the index, click paths, or the playbook's Tenant fit. Default
    to the overlay with no tenant writes. Leave **Approved by** as
