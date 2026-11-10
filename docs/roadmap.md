@@ -21,7 +21,7 @@ passes.
 ## Phase 1: Brief → data pack + script (≈2–3 weeks)
 - [ ] Fill in `context/` (baseline, personas, reports, listening, 3 playbooks)
 - [ ] Lock the brief and plan schemas after trying them on 2 real (past) deals
-- [ ] Run end to end for Healthcare, Public Sector, Travel & Hospitality
+- [ ] Run end to end for Healthcare (data pack v1 done, [context/packs/healthcare](../context/packs/healthcare/)), Public Sector, Travel & Hospitality
 - [ ] Have 2–3 SEs use it on live deals. Collect time saved and what they edited
 
 **Exit:** SEs choose to use it, and plan approval takes under 10 minutes.

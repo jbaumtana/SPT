@@ -41,7 +41,7 @@ We're copying MeshMesh's pattern, not its scale:
 | --- | --- | --- | --- |
 | 1 | **Context layer**: tenant baseline, personas, report templates, listening topics, industry playbooks | [`context/`](context/) | 0–1 |
 | 2 | **Intake**: prospect brief in, SE-approved demo plan out | [`schemas/`](schemas/), [`examples/`](examples/) | 1 |
-| 3 | **Synthetic data generator**: brands, posts, engagement, inbox, sentiment | demo-tailor `demo-data-pack` skill | 1 |
+| 3 | **Synthetic data generator**: brands, posts, engagement, inbox, sentiment ([workstream](docs/workstreams/data-generation.md)) | [`skills/data-pack/`](skills/data-pack/SKILL.md), packs in [`context/packs/`](context/packs/) | 1 |
 | 4 | **Demo script**: click path and talk track | demo-tailor `demo-narrative` skill | 1 |
 | 5 | **Brand kit automation**: logo, colors, voice | TBD | 2 |
 | 6 | **Hands**: Sprout APIs/internal tooling, plus browser automation | demo-tailor `demo-overlay` skill + TBD | 3 |
@@ -66,7 +66,7 @@ The `demo-tailor` plugin already provides most of the first slice as skills:
 | --- | --- |
 | `prospect-brief` | Intake: research + structured brief |
 | `industry-playbook` | Reads and writes the playbooks in `context/playbooks/` |
-| `demo-data-pack` | Synthetic data generator |
+| `demo-data-pack` | Replaced by this repo's `data-pack` skill |
 | `demo-narrative` | Demo script / run sheet |
 | `demo-overlay` | Browser "hands" (overlay-only, revertible, for Phase 3) |
 

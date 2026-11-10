@@ -1,0 +1,675 @@
+{
+  "_note": "Illustrative sample data. Prospect-neutral industry pack: nothing here describes a real organization, person, or result.",
+  "meta": {
+    "pack": "healthcare",
+    "track": "industry",
+    "version": 1,
+    "generatedOn": "2026-11-04",
+    "playbook": "context/playbooks/healthcare.md",
+    "basedOnPack": null,
+    "prospect": null,
+    "planPath": null,
+    "allowPublic": false,
+    "sentimentMix": {
+      "positive": 60,
+      "neutral": 25,
+      "negative": 15
+    },
+    "sampleDataNote": "Generated metrics are never described as a prospect's real results, a benchmark, or a promise. This pack contains no metrics."
+  },
+  "workspace": {
+    "brandName": "Secure Patient Technology",
+    "brandColors": {
+      "primary": "#0B5C8E",
+      "accent": "#1AA39A"
+    }
+  },
+  "profiles": [
+    {
+      "id": "pr-x",
+      "network": "x",
+      "handle": "@SecurePatientIT",
+      "sproutProfileId": 7139160,
+      "role": "receives seeded inbox messages"
+    },
+    {
+      "id": "pr-ig",
+      "network": "instagram",
+      "handle": "securepatientit",
+      "sproutProfileId": 7140859
+    },
+    {
+      "id": "pr-li",
+      "network": "linkedin",
+      "handle": "secure-patient-technology",
+      "sproutProfileId": 7139172
+    },
+    {
+      "id": "pr-th",
+      "network": "threads",
+      "handle": "securepatientit",
+      "sproutProfileId": 7213583
+    }
+  ],
+  "campaigns": [
+    {
+      "id": "c-edu",
+      "name": "Patient Education",
+      "pillar": "patient education",
+      "tenantTagId": 4357351,
+      "replaces": [
+        "Patient Portal Launch",
+        "Tech - FAQ",
+        "Tech - Infographics"
+      ]
+    },
+    {
+      "id": "c-trust",
+      "name": "Privacy & Trust",
+      "pillar": "patient privacy",
+      "tenantTagId": 3867977,
+      "replaces": [
+        "Tech - Compliance Campaign"
+      ]
+    },
+    {
+      "id": "c-community",
+      "name": "Community Health Events",
+      "pillar": "community health",
+      "tenantTagId": null,
+      "replaces": [
+        "Tech - Webinar Event",
+        "Tech - ViVE 2025 Event"
+      ]
+    },
+    {
+      "id": "c-provider",
+      "name": "Provider Spotlights",
+      "pillar": "provider spotlight",
+      "tenantTagId": null,
+      "replaces": [
+        "Tech - Executives",
+        "Tech - Influencer Marketing Campaign"
+      ]
+    },
+    {
+      "id": "c-careers",
+      "name": "Careers",
+      "pillar": "careers",
+      "tenantTagId": 3867987,
+      "replaces": [
+        "Tech - Hiring Campaign"
+      ]
+    }
+  ],
+  "posts": [
+    {
+      "id": "h-p01",
+      "status": "scheduled",
+      "network": "linkedin",
+      "pillar": "patient education",
+      "campaignId": "c-edu",
+      "caption": "Your visit summary is more than paperwork. Here's a plain-language guide to what's in it, where to find it in the patient portal, and who to ask when something doesn't look right. #PatientEducation #HealthLiteracy",
+      "pinDate": null,
+      "dateSensitive": false,
+      "visibility": "draft"
+    },
+    {
+      "id": "h-p02",
+      "status": "scheduled",
+      "network": "instagram",
+      "pillar": "patient education",
+      "campaignId": "c-edu",
+      "caption": "Swipe through: five questions worth writing down before your next appointment. Your care team wants you to ask. #PatientEducation #AskYourCareTeam",
+      "pinDate": null,
+      "dateSensitive": false,
+      "visibility": "draft"
+    },
+    {
+      "id": "h-p03",
+      "status": "scheduled",
+      "network": "x",
+      "pillar": "patient education",
+      "campaignId": "c-edu",
+      "caption": "Primary care, urgent care or the emergency room? Our plain-language guide helps you pick the right door. #PatientEducation",
+      "pinDate": null,
+      "dateSensitive": false,
+      "visibility": "draft"
+    },
+    {
+      "id": "h-p04",
+      "status": "scheduled",
+      "network": "threads",
+      "pillar": "patient privacy",
+      "campaignId": "c-trust",
+      "caption": "Quick reminder: for anything personal about your health or your bill, please call the number on your statement or use the secure patient portal. Please don't post private details here. #PatientPrivacy",
+      "pinDate": null,
+      "dateSensitive": false,
+      "visibility": "draft"
+    },
+    {
+      "id": "h-p05",
+      "status": "scheduled",
+      "network": "instagram",
+      "pillar": "patient education",
+      "campaignId": "c-edu",
+      "caption": "How to read your after-visit summary, step by step. Save this for your next appointment. #HealthLiteracy #PatientEducation",
+      "pinDate": null,
+      "dateSensitive": false,
+      "visibility": "draft"
+    },
+    {
+      "id": "h-p06",
+      "status": "scheduled",
+      "network": "linkedin",
+      "pillar": "patient privacy",
+      "campaignId": "c-trust",
+      "caption": "Protecting patient privacy is a team sport. Our compliance and care teams review public posts together before they go live. #PatientPrivacy #Compliance",
+      "pinDate": null,
+      "dateSensitive": false,
+      "visibility": "draft"
+    },
+    {
+      "id": "h-p07",
+      "status": "scheduled",
+      "network": "instagram",
+      "pillar": "community health",
+      "campaignId": "c-community",
+      "caption": "Our community walking group meets weekly on the riverside path. All paces welcome, comfortable shoes recommended. #CommunityHealth",
+      "pinDate": null,
+      "dateSensitive": false,
+      "visibility": "draft"
+    },
+    {
+      "id": "h-p08",
+      "status": "scheduled",
+      "network": "x",
+      "pillar": "community health",
+      "campaignId": "c-community",
+      "caption": "Community health talks are open to everyone. Bring your questions and a neighbor. Details are on our events page. #CommunityHealth",
+      "pinDate": null,
+      "dateSensitive": false,
+      "visibility": "draft"
+    },
+    {
+      "id": "h-p09",
+      "status": "scheduled",
+      "network": "linkedin",
+      "pillar": "community health",
+      "campaignId": "c-community",
+      "caption": "Our community health team partners with local organizations to bring health education closer to home. #CommunityHealth",
+      "pinDate": null,
+      "dateSensitive": false,
+      "visibility": "draft"
+    },
+    {
+      "id": "h-p10",
+      "status": "scheduled",
+      "network": "threads",
+      "pillar": "community health",
+      "campaignId": "c-community",
+      "caption": "What's one health question you wish more people asked? Tell us below and we'll answer a few in an upcoming post. #CommunityHealth",
+      "pinDate": null,
+      "dateSensitive": false,
+      "visibility": "draft"
+    },
+    {
+      "id": "h-p11",
+      "status": "scheduled",
+      "network": "linkedin",
+      "pillar": "provider spotlight",
+      "campaignId": "c-provider",
+      "caption": "Meet the nurse practitioners who lead our primary care clinics. Our spotlight series starts with how they build trust with every patient who walks in. #ProviderSpotlight",
+      "pinDate": null,
+      "dateSensitive": false,
+      "visibility": "draft"
+    },
+    {
+      "id": "h-p12",
+      "status": "scheduled",
+      "network": "instagram",
+      "pillar": "provider spotlight",
+      "campaignId": "c-provider",
+      "caption": "Behind the scenes with our care coordination team: the people who connect the dots between your appointments. #ProviderSpotlight #CareTeam",
+      "pinDate": null,
+      "dateSensitive": false,
+      "visibility": "draft"
+    },
+    {
+      "id": "h-p13",
+      "status": "scheduled",
+      "network": "x",
+      "pillar": "provider spotlight",
+      "campaignId": "c-provider",
+      "caption": "Thank you to every nurse, technician and front-desk teammate who makes patients feel welcome. We see you. #CareTeam",
+      "pinDate": null,
+      "dateSensitive": false,
+      "visibility": "draft"
+    },
+    {
+      "id": "h-p14",
+      "status": "scheduled",
+      "network": "linkedin",
+      "pillar": "careers",
+      "campaignId": "c-careers",
+      "caption": "Join a team that puts patients first. We're hiring across nursing, patient access and digital communications. Learn more on our careers page. #NowHiring #HealthcareCareers",
+      "pinDate": null,
+      "dateSensitive": false,
+      "visibility": "draft"
+    },
+    {
+      "id": "h-p15",
+      "status": "scheduled",
+      "network": "x",
+      "pillar": "careers",
+      "campaignId": "c-careers",
+      "caption": "Your next role could be here. See open positions across nursing, patient access and support services. #NowHiring",
+      "pinDate": null,
+      "dateSensitive": false,
+      "visibility": "draft"
+    },
+    {
+      "id": "h-p16",
+      "status": "scheduled",
+      "network": "instagram",
+      "pillar": "careers",
+      "campaignId": "c-careers",
+      "caption": "A day in the life of a patient access specialist, in 30 seconds. Open roles are on our careers page. #HealthcareCareers",
+      "pinDate": null,
+      "dateSensitive": false,
+      "visibility": "draft"
+    },
+    {
+      "id": "h-p17",
+      "status": "scheduled",
+      "network": "linkedin",
+      "pillar": "events",
+      "campaignId": "c-community",
+      "caption": "Join our virtual Q&A with the care team on using your health records online with confidence. Send your questions ahead of time on our events page. #HealthEducation",
+      "pinDate": null,
+      "dateSensitive": false,
+      "visibility": "draft"
+    },
+    {
+      "id": "h-p18",
+      "status": "scheduled",
+      "network": "x",
+      "pillar": "events",
+      "campaignId": "c-community",
+      "caption": "Virtual Q&A: how to use your patient portal with confidence. Submit your question ahead of time on our events page. #HealthEducation",
+      "pinDate": null,
+      "dateSensitive": false,
+      "visibility": "draft"
+    },
+    {
+      "id": "h-p19",
+      "status": "pending_approval",
+      "network": "linkedin",
+      "pillar": "patient education",
+      "campaignId": "c-edu",
+      "caption": "New guide: reading your lab results online. What the ranges mean, why your care team may have more context, and how to send a secure message with questions. #PatientEducation",
+      "pinDate": null,
+      "dateSensitive": false,
+      "visibility": "draft"
+    }
+  ],
+  "seasonalLibrary": [
+    {
+      "id": "h-s01",
+      "season": "flu season",
+      "window": "early autumn",
+      "network": "x",
+      "caption": "Flu season is coming. Ask your care team whether a flu shot is right for you. #FluSeason"
+    },
+    {
+      "id": "h-s02",
+      "season": "open enrollment",
+      "window": "late autumn",
+      "network": "linkedin",
+      "caption": "Open enrollment is a good time to review your coverage options and ask questions. Our team can point you to resources. #OpenEnrollment"
+    },
+    {
+      "id": "h-s03",
+      "season": "sun safety",
+      "window": "summer",
+      "network": "instagram",
+      "caption": "Heading outdoors? Sun safety basics from our primary care team: shade, hats and sunscreen. #HealthTips"
+    },
+    {
+      "id": "h-s04",
+      "season": "awareness months",
+      "window": "varies by service line",
+      "network": "instagram",
+      "caption": "Awareness months are a chance to start conversations. Share this with someone who might find it useful. #HealthAwareness"
+    }
+  ],
+  "approvals": [
+    {
+      "postId": "h-p19",
+      "workflow": "Clinical & Compliance Review",
+      "requestedBy": "u-creator",
+      "steps": [
+        {
+          "name": "Clinical content review",
+          "approver": "u-clinical"
+        },
+        {
+          "name": "Compliance review",
+          "approver": "u-compliance"
+        }
+      ]
+    }
+  ],
+  "users": [
+    {
+      "id": "u-creator",
+      "name": "Jordan Ellis",
+      "role": "Content creator",
+      "isFictional": true
+    },
+    {
+      "id": "u-clinical",
+      "name": "Morgan Reyes",
+      "role": "Clinical reviewer",
+      "isFictional": true
+    },
+    {
+      "id": "u-compliance",
+      "name": "Sam Okafor",
+      "role": "Compliance reviewer",
+      "isFictional": true
+    },
+    {
+      "id": "u-agent",
+      "name": "Casey Lindqvist",
+      "role": "Care agent",
+      "isFictional": true
+    }
+  ],
+  "inbox": [
+    {
+      "id": "h-i01",
+      "network": "x",
+      "type": "mention",
+      "senderPersona": "emily",
+      "senderHandle": "@EmilyNMarketing",
+      "text": "@SecurePatientIT thank you to the nurse at the front desk today. She stayed calm and explained everything. Made a stressful morning so much easier!",
+      "sentiment": "positive",
+      "scenario": "praise for staff",
+      "expectedRoute": "reply",
+      "suggestedReply": "Thank you for the kind words! We'll share this with the team."
+    },
+    {
+      "id": "h-i02",
+      "network": "x",
+      "type": "mention",
+      "senderPersona": "liam",
+      "senderHandle": "@dublindrforkids",
+      "text": "@SecurePatientIT the patient portal is so much easier to navigate now. Found my visit summary in seconds.",
+      "sentiment": "positive",
+      "scenario": "portal praise",
+      "expectedRoute": "reply",
+      "suggestedReply": "So glad it helped! Let us know if anything else is hard to find."
+    },
+    {
+      "id": "h-i03",
+      "network": "x",
+      "type": "mention",
+      "senderPersona": "arletta",
+      "senderHandle": "@arlettabrown353",
+      "text": "@SecurePatientIT shoutout to the care coordination team for getting my follow-up scheduled quickly. Grateful!",
+      "sentiment": "positive",
+      "scenario": "praise for staff",
+      "expectedRoute": "reply",
+      "suggestedReply": "Thank you for the kind words! We'll share this with the team."
+    },
+    {
+      "id": "h-i04",
+      "network": "instagram",
+      "type": "comment",
+      "senderPersona": "arletta",
+      "senderHandle": "drarlettabrown",
+      "text": "Love this series. The nurse practitioners at our clinic are the best.",
+      "sentiment": "positive",
+      "scenario": "provider spotlight praise",
+      "expectedRoute": "reply",
+      "suggestedReply": "Thank you for the kind words! We'll share this with the team."
+    },
+    {
+      "id": "h-i05",
+      "network": "x",
+      "type": "mention",
+      "senderPersona": "emily",
+      "senderHandle": "@EmilyNMarketing",
+      "text": "@SecurePatientIT your community walking group is such a great idea. Bringing my neighbor next time!",
+      "sentiment": "positive",
+      "scenario": "community event praise",
+      "expectedRoute": "reply",
+      "suggestedReply": "We'd love to see you both there!"
+    },
+    {
+      "id": "h-i06",
+      "network": "instagram",
+      "type": "dm",
+      "senderPersona": "arletta",
+      "senderHandle": "drarlettabrown",
+      "text": "Hi! Just wanted to say thank you to the pharmacy team. They were so patient with my questions today.",
+      "sentiment": "positive",
+      "scenario": "praise for staff",
+      "expectedRoute": "reply",
+      "suggestedReply": "Thank you for the kind words! We'll share this with the team."
+    },
+    {
+      "id": "h-i07",
+      "network": "x",
+      "type": "mention",
+      "senderPersona": "liam",
+      "senderHandle": "@dublindrforkids",
+      "text": "@SecurePatientIT the virtual Q&A was really helpful. Please do more of these!",
+      "sentiment": "positive",
+      "scenario": "event praise",
+      "expectedRoute": "reply",
+      "suggestedReply": "Thank you! More are on the way. Watch our events page."
+    },
+    {
+      "id": "h-i08",
+      "network": "x",
+      "type": "mention",
+      "senderPersona": "emily",
+      "senderHandle": "@EmilyNMarketing",
+      "text": "@SecurePatientIT kudos to Nurse Elena on the night shift for being so kind to my mom. Please pass it along.",
+      "sentiment": "positive",
+      "scenario": "praise for named (invented) nurse",
+      "expectedRoute": "reply",
+      "suggestedReply": "We'll pass this along to Elena and her team. Thank you."
+    },
+    {
+      "id": "h-i09",
+      "network": "instagram",
+      "type": "comment",
+      "senderPersona": "arletta",
+      "senderHandle": "drarlettabrown",
+      "text": "This guide is so clear. Sharing it with my family group chat.",
+      "sentiment": "positive",
+      "scenario": "education praise",
+      "expectedRoute": "reply",
+      "suggestedReply": "Thank you for sharing it!"
+    },
+    {
+      "id": "h-i10",
+      "network": "x",
+      "type": "mention",
+      "senderPersona": "liam",
+      "senderHandle": "@dublindrforkids",
+      "text": "@SecurePatientIT love the plain-language health guides you post. Clear and kind.",
+      "sentiment": "positive",
+      "scenario": "education praise",
+      "expectedRoute": "reply",
+      "suggestedReply": "Thank you for the kind words! We'll share this with the team."
+    },
+    {
+      "id": "h-i11",
+      "network": "x",
+      "type": "mention",
+      "senderPersona": "arletta",
+      "senderHandle": "@arlettabrown353",
+      "text": "@SecurePatientIT the check-in process was smooth today. Thank you!",
+      "sentiment": "positive",
+      "scenario": "praise for staff",
+      "expectedRoute": "reply",
+      "suggestedReply": "Thank you for the kind words! We'll share this with the team."
+    },
+    {
+      "id": "h-i12",
+      "network": "instagram",
+      "type": "dm",
+      "senderPersona": "arletta",
+      "senderHandle": "drarlettabrown",
+      "text": "Thank you for the reminder email about my appointment. It really helps.",
+      "sentiment": "positive",
+      "scenario": "appointment reminder praise",
+      "expectedRoute": "reply",
+      "suggestedReply": "We're glad it helps!"
+    },
+    {
+      "id": "h-i13",
+      "network": "x",
+      "type": "mention",
+      "senderPersona": "emily",
+      "senderHandle": "@EmilyNMarketing",
+      "text": "@SecurePatientIT what are your clinic hours on the weekend?",
+      "sentiment": "neutral",
+      "scenario": "hours question",
+      "expectedRoute": "reply",
+      "suggestedReply": "Hours vary by location. Please check the locations page or call your clinic directly."
+    },
+    {
+      "id": "h-i14",
+      "network": "x",
+      "type": "mention",
+      "senderPersona": "liam",
+      "senderHandle": "@dublindrforkids",
+      "text": "@SecurePatientIT how do I reset my patient portal password?",
+      "sentiment": "neutral",
+      "scenario": "portal login help",
+      "expectedRoute": "reply",
+      "suggestedReply": "Use the 'Forgot password' link on the portal sign-in page. If that doesn't work, call the number on the sign-in page."
+    },
+    {
+      "id": "h-i15",
+      "network": "instagram",
+      "type": "dm",
+      "senderPersona": "arletta",
+      "senderHandle": "drarlettabrown",
+      "text": "Hi, how do I request a new appointment time? I can't make my current one.",
+      "sentiment": "neutral",
+      "scenario": "appointment change",
+      "expectedRoute": "route-offline",
+      "suggestedReply": "Please call our scheduling line or use the secure patient portal so we can help you safely. We can't change appointments over social."
+    },
+    {
+      "id": "h-i16",
+      "network": "x",
+      "type": "mention",
+      "senderPersona": "arletta",
+      "senderHandle": "@arlettabrown353",
+      "text": "@SecurePatientIT do you have openings for nurses? Where can I apply?",
+      "sentiment": "neutral",
+      "scenario": "recruiting inquiry",
+      "expectedRoute": "reply",
+      "suggestedReply": "Yes! See open positions on our careers page."
+    },
+    {
+      "id": "h-i17",
+      "network": "x",
+      "type": "mention",
+      "senderPersona": "emily",
+      "senderHandle": "@EmilyNMarketing",
+      "text": "@SecurePatientIT I want to send you my insurance information and a photo of my card. Where should I send it?",
+      "sentiment": "neutral",
+      "scenario": "wrong-channel private information",
+      "expectedRoute": "route-offline",
+      "suggestedReply": "Please don't share insurance or personal details on social media. Call the number on your card or use the secure patient portal."
+    },
+    {
+      "id": "h-i18",
+      "network": "x",
+      "type": "mention",
+      "senderPersona": "liam",
+      "senderHandle": "@dublindrforkids",
+      "text": "@SecurePatientIT I've been trying to understand my bill for two weeks and nobody has called me back. Very frustrating.",
+      "sentiment": "negative",
+      "scenario": "billing complaint",
+      "expectedRoute": "escalate",
+      "suggestedReply": "We're sorry for the wait. Please call the billing number on your statement, or send us a direct message with your name only and we'll connect you with a billing specialist."
+    },
+    {
+      "id": "h-i19",
+      "network": "instagram",
+      "type": "dm",
+      "senderPersona": "arletta",
+      "senderHandle": "drarlettabrown",
+      "text": "I think I was charged twice for the same visit and the billing line is always busy. Can someone help?",
+      "sentiment": "negative",
+      "scenario": "billing complaint",
+      "expectedRoute": "escalate",
+      "suggestedReply": "We're sorry about this. Please share only your name here and we'll have a billing specialist reach out through a secure channel."
+    },
+    {
+      "id": "h-i20",
+      "network": "x",
+      "type": "mention",
+      "senderPersona": "emily",
+      "senderHandle": "@EmilyNMarketing",
+      "text": "@SecurePatientIT your billing statement is confusing. I can't tell what I owe or why.",
+      "sentiment": "negative",
+      "scenario": "billing complaint",
+      "expectedRoute": "route-offline",
+      "suggestedReply": "We're sorry it's confusing. A billing specialist can walk you through it. Please call the number on your statement."
+    }
+  ],
+  "listening": [
+    {
+      "topic": "Secure Patient Tech",
+      "talkingPoint": "Brand health: watch for patient-experience spikes after a billing or portal change."
+    },
+    {
+      "topic": "Healthcare Tech Industry",
+      "talkingPoint": "Industry insights: what patients and peers say about portals and privacy."
+    }
+  ],
+  "reportFraming": [
+    {
+      "report": "Tag Performance",
+      "framing": "Campaigns stand in for service lines. Compare Patient Education against Community Health Events."
+    },
+    {
+      "report": "Inbox Activity",
+      "framing": "Show where billing questions pile up and who is handling them."
+    },
+    {
+      "report": "Case Management",
+      "framing": "Billing complaints become cases with an owner, not a lost DM."
+    },
+    {
+      "report": "Publishing Team",
+      "framing": "Who drafted, who reviewed, and how long clinical and compliance review took."
+    }
+  ],
+  "relabels": [
+    [
+      "Compliance Approval Workflow",
+      "Clinical & Compliance Review"
+    ],
+    [
+      "Compliance Approval [MF]",
+      "Clinical & Compliance Review"
+    ]
+  ],
+  "outOfClickPath": [
+    "Secure Patient Tech",
+    "Healthcare Tech Industry",
+    "Credit Unions Industry",
+    "Life, Illuminated"
+  ]
+}
