@@ -104,7 +104,7 @@ const tests = {
     const page = await setup(browser, '<p class="cap">Secure Patient Technology</p><img src="a.png">');
     const original = await page.evaluate(() => document.documentElement.outerHTML);
     const payload = {
-      textRules: [{ find: 'Secure Patient Technology', replace: 'BCBSA' }],
+      textRules: [{ find: 'Secure Patient Technology', replace: 'Example Payer' }],
       selectorRules: [{ selector: 'img', action: 'attr', attr: 'src', value: 'b.png' }],
       cssVars: { '--brand-primary': '#005EB8' },
       injectCss: 'body{color:red}',
@@ -127,7 +127,7 @@ const tests = {
   async 'E7: revert disconnects observers; later changes are not re-applied'(browser) {
     const page = await setup(browser, '<h1 id="t">Secure Patient Technology</h1>');
     await page.evaluate(() => {
-      __demoTailor.apply({ textRules: [{ find: 'Secure Patient Technology', replace: 'BCBSA' }] });
+      __demoTailor.apply({ textRules: [{ find: 'Secure Patient Technology', replace: 'Example Payer' }] });
       __demoTailor.revert();
       document.getElementById('t').firstChild.nodeValue = 'Secure Patient Technology';
       document.body.insertAdjacentHTML('beforeend', '<p id="n">Secure Patient Technology</p>');

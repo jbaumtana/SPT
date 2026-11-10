@@ -55,7 +55,7 @@ Outputs: `demo-data.json` (the source of truth), CSV/paste-ready views, and
 | Pack validator | Done: `tools/check_pack.py` + `tools/test_check_pack.py` (schema, references, tenant IDs, real names, claims, private details, sentiment mix, overlay build) |
 | Overlay payload build and check (D1–D4, D6) | Done, with tests |
 | D5 (neutral thumbnails) | Not started |
-| BCBSA comparison against the hand-fixed payload | Not done; that file isn't in the repo |
+| Comparison against the hand-fixed payload | Not done; that file isn't in the repo |
 | Track A packs | **Healthcare v1 done** ([`context/packs/healthcare/`](../../context/packs/healthcare/), committed). Public Sector and Travel & Hospitality not started |
 
 ## Gaps to close (proposed order)
@@ -65,7 +65,7 @@ Outputs: `demo-data.json` (the source of truth), CSV/paste-ready views, and
 3. ~~**Add a pack validator**~~ done: (`tools/check_pack.py`): schema, no real names, no prospect name in anything marked public, every tenant label covered, sentiment mix matches the plan, counts match `data_to_generate`.
 4. **Generate Track A packs** for the other two verticals (Healthcare done), prospect-neutral, validated.
 5. **Track B as a diff on Track A**: customer pack = vertical pack + relabels + pinned copy, so a new prospect is a small change, not a regeneration.
-6. **D5** (optional neutral images) and the BCBSA regression comparison.
+6. **D5** (optional neutral images) and the regression comparison against the hand-fixed payload.
 
 **Exit test:** for each of the three verticals, generate a Track A pack, derive a Track B pack from a sample brief, pass the validator with zero manual edits, and build an overlay payload that passes `check`.
 

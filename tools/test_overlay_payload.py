@@ -36,7 +36,7 @@ def visuals(**over):
 def data(**over):
     d = {
         "workspace": {"brandColors": {"primary": "#005EB8", "accent": "#00A3E0"}, "logoDataUri": "data:image/svg+xml;base64,AA"},
-        "relabels": [["Secure Patient Technology", "BCBSA"], ["Compliance Approval [MF]", "Legal & Policy Review"]],
+        "relabels": [["Secure Patient Technology", "Example Payer"], ["Compliance Approval [MF]", "Legal & Policy Review"]],
         "campaigns": [{"id": "c1", "name": "Policy Explainers", "replaces": ["Patient Portal Launch", "Tech - FAQ"]},
                       {"id": "c2", "name": "Open Enrollment 2027", "replaces": ["Tech - Hiring Campaign"]}],
         "posts": [

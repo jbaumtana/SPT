@@ -23,7 +23,7 @@
       "dateAttr": "data-qa-date",
       "dateFormat": "MM/DD/YYYY",
       "root": "#publishing_calendar",
-      "stableSource": "Sprout data-qa attributes seen in the BCBSA pre-flight, 2026-10-09 (docs/overlay-fix-plan.md S1-S2). Prefer these over the hashed selectors; confirm in the next browser pass."
+      "stableSource": "Sprout data-qa attributes seen in the first payer pre-flight, 2026-10-09 (docs/overlay-fix-plan.md S1-S2). Prefer these over the hashed selectors; confirm in the next browser pass."
     },
     "composer": {
       "opensFrom": "Publishing > New Post (modal)",

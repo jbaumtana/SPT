@@ -1,10 +1,10 @@
-# Overlay fix plan, from the BCBSA pre-flight (2026-10-09)
+# Overlay fix plan, from the first payer pre-flight (2026-10-09)
 
-The BCBSA test run found problems the headless test missed. Part of the cause is that the test page was built from selectors, so it had none of Sprout's real structure, such as captions split into several pieces. This plan groups the fixes by where they belong in the code. Each fix comes with a test, so the same problem can't pass again.
+The first payer test run found problems the headless test missed. Part of the cause is that the test page was built from selectors, so it had none of Sprout's real structure, such as captions split into several pieces. This plan groups the fixes by where they belong in the code. Each fix comes with a test, so the same problem can't pass again.
 
 ## Paste this into the local session
 
-> Read CLAUDE.md, docs/overlay-fix-plan.md, and runs/2026-10-08-bcbsa/preflight.md. Work through the plan in phase order, one commit per phase, tests first. Don't change the tenant.
+> Read CLAUDE.md, docs/overlay-fix-plan.md, and runs/2026-10-08-payer/preflight.md. Work through the plan in phase order, one commit per phase, tests first. Don't change the tenant.
 
 ---
 
@@ -20,7 +20,7 @@ The BCBSA test run found problems the headless test missed. Part of the cause is
 | E4 | **Captions couldn't be tied to a date.** Pinning a date needed a hand-written `:not()` chain of selectors. | Add `scope` to selector rules, for example `{"scope": "[data-qa-date='10/15/2026']"}`, and give scoped rules priority over general ones. A matched element is then skipped by later rules (claimed once), instead of the current per-rule `markSeen`. | Fixture: a scoped rule and a general rule cover the same element, and the scoped value wins. |
 | E5 | **Applying twice added to the undo log**, recording the CSS variables twice. | Make `apply()` revert first, or skip what's already recorded, so applying twice equals applying once. | Apply twice, revert once, and check the page matches the original exactly. |
 | E6 | **No built-in leftover check.** Pre-flight needed hand-written JavaScript. | Add `audit({deny: [...], patterns: [...]})`. It returns visible leftover matches with each one's selector, using the same visibility rules as `scan()`. | Unit test against a fixture that contains seed strings. |
-| E7 | **The page-side hotfix (`__bcbsaCD`) isn't cleaned up by `revert()`.** | E1 makes the hotfix unnecessary. `revert()` should disconnect every observer the engine owns. | Revert, mutate the page, and check nothing re-applies. |
+| E7 | **The page-side hotfix (`__preflightCD`) isn't cleaned up by `revert()`.** | E1 makes the hotfix unnecessary. `revert()` should disconnect every observer the engine owns. | Revert, mutate the page, and check nothing re-applies. |
 
 ## Phase 2: Selectors and the browser pass (`app-map.json`, `docs/browser-pass.md`)
 
@@ -63,13 +63,13 @@ Engine v1.2.0 adds `image` (img src/srcset/picture, SVG `<image>`, CSS backgroun
 
 - Reconnect LinkedIn in the tenant (or lead with X and Instagram). The approval card and Profile Performance both depend on it.
 - Report numbers are small (386 impressions in September). Either accept "demo account" framing or pick a different report.
-- Trellis answers come from the tenant's real listening data. Decide whether Trellis stays in healthcare-payer demos; the BCBSA answer was about providers.
+- Trellis answers come from the tenant's real listening data. Decide whether Trellis stays in healthcare-payer demos; the answer in that run was about providers.
 - Clean up other teams' material: the Credit Unions topic, test reports, the "Life, Illuminated" approval, and the Cases queues.
 
 ## Order and size
 
 1. **Phase 1, E1–E5** (engine; about half a day). Everything else depends on it.
 2. **S1–S3** (selectors and real-page test copies; one browser pass). Needs a local session with Chrome.
-3. **D1–D4 and D6** (generator and validation). Re-run the BCBSA data pack and check the result matches my hand-fixed payload in `runs/2026-10-08-bcbsa/data-pack/overlay-payload.json`.
-4. **E6 and P1–P2** (automated pre-flight). Then re-run the BCBSA pre-flight from scratch as the acceptance test: zero leftovers and one caption per card on all 4 screens.
+3. **D1–D4 and D6** (generator and validation). Re-run that data pack and check the result matches my hand-fixed payload in `runs/2026-10-08-payer/data-pack/overlay-payload.json`.
+4. **E6 and P1–P2** (automated pre-flight). Then re-run that pre-flight from scratch as the acceptance test: zero leftovers and one caption per card on all 4 screens.
 5. **D5, S4, P3 and P4** when there's time.
