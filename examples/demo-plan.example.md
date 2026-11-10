@@ -28,6 +28,11 @@ close on a recruiting-impact report the VP can take to the board.
 ## Brand kit
 Prospect logo: **yes** (Legal: allowed). Colors from their site. Voice: plain-language, warm, no jargon.
 
+## Overlay visuals (optional, off unless listed)
+- **Chart:** *Careers campaign performance* → drawn line chart, "applicant clicks rising after launch". KPI tile "Link clicks" reads from the same numbers
+- **Images:** Approval card thumbnail → hide (off-message stock photo). Calendar thumbnails → monogram
+- Sample data only. Never described as Bayline's real results
+
 ## Tenant actions
 None (Phase 1). SE loads manually or uses the overlay.
 

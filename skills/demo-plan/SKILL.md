@@ -42,7 +42,11 @@ will see. Do the file work quietly.
 4. **Write the plan** in the run folder as `plan.md`, following
    `examples/demo-plan.example.md`: story, screens (each tied to one pain, with
    minutes), profiles and tags to show, risks, open items. Leave
-   **Approved by** blank.
+   **Approved by** blank. If a screen shows a report chart or an off-message
+   image, add an overlay visuals section to the plan. Charts and images stay
+   off unless the plan lists them, and only charts already mapped in the
+   bundled app map can be listed; if one isn't, say the visuals pass has to
+   run first.
 5. **Stop and show the plan** in plain language. Ask the SE to approve or edit.
 6. **After approval,** offer the next step: the `demo-overlay` skill (builds the
    on-screen branding and the run sheet). The Sprout API is optional and

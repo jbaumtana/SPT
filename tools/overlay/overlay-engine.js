@@ -1,9 +1,14 @@
-/* demo-tailor overlay engine v1.1.0-spt
+/* demo-tailor overlay engine v1.2.0-spt
  * Copied from the demo-tailor plugin (v1.0.0) and fixed per
  * docs/overlay-fix-plan.md, Phase 1: in-place text changes (E1), wholeWord
  * next to punctuation (E2), keyed values (E3), scoped rules claimed once (E4),
  * idempotent apply (E5), audit() (E6), revert() stops all observers (E7),
  * perScope on scoped rules (one pinned caption per day).
+ * v1.2.0: visuals. `image` action (img src+srcset+picture, svg <image>, CSS
+ * background), `replaceWith` action (hide a chart/canvas/svg and inject
+ * replacement markup in its place), attribute watching so the app can't undo
+ * either, scan() inventories canvas/svg/background images, audit() checks
+ * image sources and charts left showing.
  * Tests: tools/overlay/test_engine.js
  *
  * Injects prospect-specific branding and content over a running demo app,
@@ -19,7 +24,7 @@
 (function () {
   'use strict';
 
-  var VERSION = '1.1.0-spt';
+  var VERSION = '1.2.0-spt';
   /* Revert any engine already on the page, whatever its version, so two
      observers never run at once. */
   if (window.__demoTailor && typeof window.__demoTailor.revert === 'function') {
@@ -32,6 +37,9 @@
   var appliedText = new WeakMap();/* element -> {action, value} set by a text/html rule, re-applied if the app rewrites it (E1) */
   var ruleCursor = [];            /* per-rule counter so unkeyed value arrays keep cycling as nodes stream in */
   var scopeCounts = [];           /* per-rule WeakMap: scope element -> elements claimed in it (perScope) */
+  var appliedImage = new WeakMap();/* element -> value set by an image rule, re-applied if the app resets it */
+  var hiddenEls = new WeakSet();  /* elements hidden by a hide/replaceWith rule, re-hidden if the app resets display */
+  var replacements = [];          /* {orig, rep, value}: injected replacement markup next to a hidden original */
   var observer = null;
   var current = null;
   var applying = false;
@@ -186,6 +194,87 @@
     record(el, 'children', frag);
   }
 
+  function setAttrRecorded(el, attr, value) {
+    record({ el: el, attr: attr }, 'attribute', el.getAttribute(attr));
+    if (value === null) el.removeAttribute(attr); else el.setAttribute(attr, value);
+  }
+
+  function cssUrl(value) {
+    return 'url("' + String(value).replace(/"/g, '%22') + '")';
+  }
+
+  /* Swap an image wherever the app keeps it, so nothing from the original survives:
+     <img> (and srcset/sizes, and <picture> sources), SVG <image>, or a CSS background. */
+  function applyImage(el, value) {
+    var tag = el.tagName.toLowerCase();
+    if (tag === 'img') {
+      setAttrRecorded(el, 'src', value);
+      ['srcset', 'sizes'].forEach(function (a) { if (el.hasAttribute(a)) setAttrRecorded(el, a, null); });
+      var pic = el.parentElement;
+      if (pic && pic.tagName === 'PICTURE') {
+        Array.prototype.forEach.call(pic.querySelectorAll('source'), function (src) {
+          if (src.hasAttribute('srcset')) setAttrRecorded(src, 'srcset', null);
+        });
+      }
+    } else if (tag === 'image') {
+      if (el.hasAttribute('xlink:href')) setAttrRecorded(el, 'xlink:href', null);
+      setAttrRecorded(el, 'href', value);
+    } else {
+      record({ el: el, styleProp: 'background-image' }, 'style', el.style.getPropertyValue('background-image'));
+      el.style.setProperty('background-image', cssUrl(value), 'important');
+    }
+    appliedImage.set(el, value);
+  }
+
+  function imageHolds(el, value) {
+    var tag = el.tagName.toLowerCase();
+    if (tag === 'img') return el.getAttribute('src') === value && !el.hasAttribute('srcset');
+    if (tag === 'image') return el.getAttribute('href') === value;
+    return (el.style.getPropertyValue('background-image') || '').indexOf(String(value).replace(/"/g, '%22')) !== -1;
+  }
+
+  function hideEl(el) {
+    record({ el: el, styleProp: 'display' }, 'style', el.style.getPropertyValue('display'));
+    el.style.setProperty('display', 'none', 'important');
+    hiddenEls.add(el);
+  }
+
+  /* Hide a chart, canvas or image and put our own markup where it was. Works for canvas
+     and SVG alike because the original is never edited, only hidden and left in place. */
+  function applyReplace(el, rule, value) {
+    if (!el.parentNode) return;
+    var height = el.getBoundingClientRect().height;
+    var rep = document.createElement('div');
+    rep.setAttribute('data-demo-tailor-skip', '');
+    rep.setAttribute('data-demo-tailor-replacement', rule.id || '');
+    rep.innerHTML = value;
+    if (rule.matchSize !== false && height) rep.style.minHeight = Math.round(height) + 'px';
+    el.parentNode.insertBefore(rep, el.nextSibling);
+    record({ el: rep }, 'remove', null);
+    hideEl(el);
+    replacements.push({ orig: el, rep: rep });
+  }
+
+  /* The app redrew something we changed: put our version back (images, hidden originals,
+     replacement markup the app's own re-render dropped). */
+  function reassertVisual(el) {
+    var v = appliedImage.get(el);
+    if (v !== undefined && !imageHolds(el, v)) applyImage(el, v);
+    if (hiddenEls.has(el) && el.style.getPropertyValue('display') !== 'none') el.style.setProperty('display', 'none', 'important');
+  }
+
+  function maintainReplacements() {
+    replacements = replacements.filter(function (r) {
+      if (!r.orig.isConnected) { if (r.rep.parentNode) r.rep.parentNode.removeChild(r.rep); return false; }
+      if (!r.rep.isConnected) r.orig.parentNode.insertBefore(r.rep, r.orig.nextSibling);
+      return true;
+    });
+  }
+
+  function needsAttrWatch(rules) {
+    return (rules || []).some(function (r) { return r.action === 'image' || r.action === 'hide' || r.action === 'replaceWith'; });
+  }
+
   function applySelectorRules(rules) {
     var hits = 0;
     /* Scoped rules run first so they claim their elements before general ones (E4). */
@@ -234,8 +323,13 @@
             el.style.setProperty(rule.styleProp, value, 'important');
             break;
           case 'hide':
-            record({ el: el, styleProp: 'display' }, 'style', el.style.getPropertyValue('display'));
-            el.style.setProperty('display', 'none', 'important');
+            hideEl(el);
+            break;
+          case 'image':
+            applyImage(el, value);
+            break;
+          case 'replaceWith':
+            applyReplace(el, rule, value);
             break;
           default:
             return;
@@ -299,7 +393,12 @@
       try {
         var added = [];
         var changedText = [];
+        var removedReplacement = false;
         mutations.forEach(function (m) {
+          if (m.type === 'attributes') { if (m.target.isConnected) reassertVisual(m.target); return; }
+          Array.prototype.forEach.call(m.removedNodes || [], function (n) {
+            if (n.nodeType === 1 && n.hasAttribute('data-demo-tailor-replacement')) removedReplacement = true;
+          });
           if (m.type === 'characterData') {
             if (m.target.isConnected) changedText.push(m.target);
             return;
@@ -311,6 +410,7 @@
           if (m.target && m.target.nodeType === 1) changedText.push(m.target);
         });
         if (added.length && current && current.selectorRules) applySelectorRules(current.selectorRules);
+        if (added.length || removedReplacement) maintainReplacements();
         changedText.forEach(function (n) { if (n.isConnected) reassertApplied(n); });
         added.forEach(function (n) { if (n.isConnected) runPass(n); });
         changedText.forEach(function (n) { if (n.isConnected && n.nodeType === 3) runPass(n); });
@@ -320,7 +420,12 @@
         applying = false;
       }
     });
-    observer.observe(document.documentElement, { childList: true, subtree: true, characterData: true });
+    var opts = { childList: true, subtree: true, characterData: true };
+    if (current && needsAttrWatch(current.selectorRules)) {
+      opts.attributes = true;
+      opts.attributeFilter = ['src', 'srcset', 'href', 'xlink:href', 'style'];
+    }
+    observer.observe(document.documentElement, opts);
   }
 
   function apply(payload) {
@@ -368,6 +473,9 @@
     undoLog = [];
     claims = new WeakMap();
     appliedText = new WeakMap();
+    appliedImage = new WeakMap();
+    hiddenEls = new WeakSet();
+    replacements = [];
     ruleCursor = [];
     scopeCounts = [];
     current = null;
@@ -399,10 +507,41 @@
       .filter(function (im) { return im.offsetParent; })
       .slice(0, 40)
       .map(function (im) {
-        return { src: im.currentSrc || im.src, alt: im.alt, w: im.naturalWidth, h: im.naturalHeight, selector: cssPath(im) };
+        var pic = im.parentElement && im.parentElement.tagName === 'PICTURE';
+        return { src: im.currentSrc || im.src, alt: im.alt, w: im.naturalWidth, h: im.naturalHeight, selector: cssPath(im), srcset: im.hasAttribute('srcset'), picture: !!pic };
       });
 
-    return { url: location.href, title: document.title, strings: strings, images: images };
+    return { url: location.href, title: document.title, strings: strings, images: images, visuals: scanVisuals() };
+  }
+
+  function isShown(el) {
+    if (!el.getClientRects().length) return false;
+    var cs = getComputedStyle(el);
+    return cs.visibility !== 'hidden' && cs.display !== 'none';
+  }
+
+  /* What a chart is made of, so the browser pass can pick a replacement route:
+     <canvas> (nothing to edit; replaceWith only), <svg> (text is reachable, shapes are
+     not), and CSS background images (invisible to document.images). */
+  function scanVisuals() {
+    var out = { canvas: [], svg: [], backgroundImages: [] };
+    Array.prototype.forEach.call(document.querySelectorAll('canvas'), function (c) {
+      if (out.canvas.length < 40 && isShown(c)) out.canvas.push({ selector: cssPath(c), w: c.clientWidth, h: c.clientHeight, label: c.getAttribute('aria-label') || '' });
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('svg'), function (v) {
+      if (out.svg.length >= 40 || (v.parentElement && v.parentElement.closest('svg')) || !isShown(v)) return;
+      var r = v.getBoundingClientRect();
+      if (r.width < 48 || r.height < 32) return;  /* icons */
+      var texts = Array.prototype.slice.call(v.querySelectorAll('text')).slice(0, 6).map(function (t) { return t.textContent.trim(); });
+      out.svg.push({ selector: cssPath(v), w: Math.round(r.width), h: Math.round(r.height),
+        shapes: v.querySelectorAll('path,rect,circle,line,polygon').length, texts: texts, label: v.getAttribute('aria-label') || '' });
+    });
+    Array.prototype.forEach.call(document.body.querySelectorAll('*'), function (el) {
+      if (out.backgroundImages.length >= 40) return;
+      var bg = getComputedStyle(el).backgroundImage;
+      if (bg && bg.indexOf('url(') !== -1 && isShown(el)) out.backgroundImages.push({ selector: cssPath(el), url: bg.slice(0, 160) });
+    });
+    return out;
   }
 
   /* Visible leftovers after apply(): literal deny strings (case-insensitive)
@@ -423,11 +562,31 @@
         re.lastIndex = 0;
         var m;
         while ((m = re.exec(t))) {
-          res.push({ match: m[0], text: t.trim().slice(0, 120), selector: cssPath(el) });
+          res.push({ kind: 'text', match: m[0], text: t.trim().slice(0, 120), selector: cssPath(el) });
           if (!m[0]) re.lastIndex++;
         }
       });
     }
+    /* Imagery: sources (img, svg <image>, CSS background) that match a deny substring. */
+    var denyImg = (opts.denyImages || []).map(function (d) { return String(d).toLowerCase(); });
+    if (denyImg.length) {
+      Array.prototype.forEach.call((opts.root || document.body).querySelectorAll('*'), function (el) {
+        var src = (el.tagName === 'IMG' ? (el.currentSrc || el.src) : el.tagName.toLowerCase() === 'image' ? (el.getAttribute('href') || '') : '') ||
+          (function () { var bg = getComputedStyle(el).backgroundImage; return bg && bg.indexOf('url(') !== -1 ? bg : ''; })();
+        if (!src || !isShown(el)) return;
+        denyImg.forEach(function (d) {
+          if (src.toLowerCase().indexOf(d) !== -1) res.push({ kind: 'image', match: d, text: src.slice(0, 120), selector: cssPath(el) });
+        });
+      });
+    }
+    /* Charts that should have been replaced but are still showing. */
+    (opts.charts || []).forEach(function (sel) {
+      var els;
+      try { els = document.querySelectorAll(sel); } catch (e) { return; }
+      Array.prototype.forEach.call(els, function (el) {
+        if (isShown(el)) res.push({ kind: 'chart', match: sel, text: '', selector: cssPath(el) });
+      });
+    });
     return res;
   }
 
