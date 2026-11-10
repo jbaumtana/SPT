@@ -56,3 +56,15 @@ This project automates tailored Sprout Social demos. The workflow is
 - Anything about one specific prospect → `runs/` (git-ignored)
 - If a demo goes well, offer to fold what generalizes into its playbook
   (demo-tailor `industry-playbook` skill).
+
+## Lessons
+
+Read `lessons/` before changing the overlay, selectors, or tests. When
+something surprises you, add a note there (see `lessons/README.md`).
+
+## Reporting
+
+- Report only what a result from this session supports. If a test failed, a
+  step was skipped, or something wasn't checked, say so plainly.
+- End each run with a summary written for an SE who saw none of the work: what
+  happened first, then what you need from them, in plain words.
