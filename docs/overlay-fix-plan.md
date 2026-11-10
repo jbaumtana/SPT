@@ -1,10 +1,10 @@
-# Overlay fix plan, from the BCBSA pre-flight (2026-10-09)
+# Overlay fix plan, from the first payer pre-flight (2026-10-09)
 
-The BCBSA test run found problems the headless test missed. Part of the cause is that the test page was built from selectors, so it had none of Sprout's real structure, such as captions split into several pieces. This plan groups the fixes by where they belong in the code. Each fix comes with a test, so the same problem can't pass again.
+The first payer test run found problems the headless test missed. Part of the cause is that the test page was built from selectors, so it had none of Sprout's real structure, such as captions split into several pieces. This plan groups the fixes by where they belong in the code. Each fix comes with a test, so the same problem can't pass again.
 
 ## Paste this into the local session
 
-> Read CLAUDE.md, docs/overlay-fix-plan.md, and runs/2026-10-08-bcbsa/preflight.md. Work through the plan in phase order, one commit per phase, tests first. Don't change the tenant.
+> Read CLAUDE.md, docs/overlay-fix-plan.md, and runs/2026-10-08-payer/preflight.md. Work through the plan in phase order, one commit per phase, tests first. Don't change the tenant.
 
 ---
 
@@ -20,7 +20,7 @@ The BCBSA test run found problems the headless test missed. Part of the cause is
 | E4 | **Captions couldn't be tied to a date.** Pinning a date needed a hand-written `:not()` chain of selectors. | Add `scope` to selector rules, for example `{"scope": "[data-qa-date='10/15/2026']"}`, and give scoped rules priority over general ones. A matched element is then skipped by later rules (claimed once), instead of the current per-rule `markSeen`. | Fixture: a scoped rule and a general rule cover the same element, and the scoped value wins. |
 | E5 | **Applying twice added to the undo log**, recording the CSS variables twice. | Make `apply()` revert first, or skip what's already recorded, so applying twice equals applying once. | Apply twice, revert once, and check the page matches the original exactly. |
 | E6 | **No built-in leftover check.** Pre-flight needed hand-written JavaScript. | Add `audit({deny: [...], patterns: [...]})`. It returns visible leftover matches with each one's selector, using the same visibility rules as `scan()`. | Unit test against a fixture that contains seed strings. |
-| E7 | **The page-side hotfix (`__bcbsaCD`) isn't cleaned up by `revert()`.** | E1 makes the hotfix unnecessary. `revert()` should disconnect every observer the engine owns. | Revert, mutate the page, and check nothing re-applies. |
+| E7 | **The page-side hotfix (`__preflightCD`) isn't cleaned up by `revert()`.** | E1 makes the hotfix unnecessary. `revert()` should disconnect every observer the engine owns. | Revert, mutate the page, and check nothing re-applies. |
 
 ## Phase 2: Selectors and the browser pass (`app-map.json`, `docs/browser-pass.md`)
 
@@ -33,7 +33,7 @@ The BCBSA test run found problems the headless test missed. Part of the cause is
 
 ## Phase 3: Data-pack generator (`demo-data-pack`)
 
-**Status: D1, D2, D3 (selector rule ready; waits on the S4 selector), D4, D6 done (2026-10-09)** in `tools/overlay_payload.py` (`build` and `check`), tests in `tools/test_overlay_payload.py`. Pinned captions use `perScope: 1` (engine) so only one post per day gets them. D5 not started. Not yet compared with the hand-fixed payload from the local pre-flight: that file isn't in the repo.
+**Status: D1, D2, D3 (selector rule ready; waits on the S4 selector), D4, D6 done (2026-10-09)** in `tools/overlay_payload.py` (`build` and `check`), tests in `tools/test_overlay_payload.py`. Pinned captions use `perScope: 1` (engine) so only one post per day gets them. D5 and charts: **built (2026-10-09)**, waiting on the visuals pass for selectors (see below). Not yet compared with the hand-fixed payload from the local pre-flight: that file isn't in the repo.
 
 | # | Problem seen | Fix |
 |---|---|---|
@@ -43,6 +43,12 @@ The BCBSA test run found problems the headless test missed. Part of the cause is
 | D4 | **Some seed labels had no rule.** "Tech - FAQ" was patched in by hand. | Coverage check: every campaign, workflow, topic and handle string in `context/tenant-index-ui.md` must have a rule, or be listed as intentionally out of the click path. |
 | D5 | **Off-message images**: SPT security graphics, a "15%" infographic, and a patient in a hospital bed next to a payer statement. | Optional rules that swap calendar and approval thumbnails for generated neutral images, matching the generated monogram, or hide the image on the approval card. These are off by default and switched on per run in `plan.md`. |
 | D6 | **The emitted payload had no validation.** | Run `validate-payload` before writing: escape HTML in `html` values; reject rules where a shorter find string would match inside a longer one listed later (the "Coffee" before "Northwind Coffee" problem); flag `wholeWord` on find strings that end in punctuation (until E2 lands); and run the D1 checks. |
+
+### Visuals (charts, KPI tiles, images): built, waiting on selectors
+
+Engine v1.2.0 adds `image` (img src/srcset/picture, SVG `<image>`, CSS background), `replaceWith` (hide a chart or canvas and inject drawn markup, re-asserted if the app redraws), attribute watching, `scan().visuals`, and `audit({denyImages, charts})`. `overlay_payload.py` draws bar/line/donut SVG from `charts[]` in `demo-data.json`, derives KPI tiles from the same numbers (`kpis[].derivedFrom`), and swaps or hides images (`images[]`). All three are off unless `overlayVisuals` is set, mirroring `overlay_visuals` in the plan schema. `check` rejects scripts, event handlers, external URLs, and non-data image URIs.
+
+**Next:** the visuals pass in [`browser-pass.md`](browser-pass.md) to fill `app-map.json` (`reports.charts`, `reports.kpis`, `*.images`) and save fixtures (S3). Then run the engine tests against those fixtures and re-run a real demo as the acceptance test. Known limits: the drawn chart has no hover tooltips, and a report exported or opened in a new tab shows the real data.
 
 ## Phase 4: Pre-flight automation (`tools/preflight` or a skill step)
 
@@ -57,13 +63,13 @@ The BCBSA test run found problems the headless test missed. Part of the cause is
 
 - Reconnect LinkedIn in the tenant (or lead with X and Instagram). The approval card and Profile Performance both depend on it.
 - Report numbers are small (386 impressions in September). Either accept "demo account" framing or pick a different report.
-- Trellis answers come from the tenant's real listening data. Decide whether Trellis stays in healthcare-payer demos; the BCBSA answer was about providers.
+- Trellis answers come from the tenant's real listening data. Decide whether Trellis stays in healthcare-payer demos; the answer in that run was about providers.
 - Clean up other teams' material: the Credit Unions topic, test reports, the "Life, Illuminated" approval, and the Cases queues.
 
 ## Order and size
 
 1. **Phase 1, E1–E5** (engine; about half a day). Everything else depends on it.
 2. **S1–S3** (selectors and real-page test copies; one browser pass). Needs a local session with Chrome.
-3. **D1–D4 and D6** (generator and validation). Re-run the BCBSA data pack and check the result matches my hand-fixed payload in `runs/2026-10-08-bcbsa/data-pack/overlay-payload.json`.
-4. **E6 and P1–P2** (automated pre-flight). Then re-run the BCBSA pre-flight from scratch as the acceptance test: zero leftovers and one caption per card on all 4 screens.
+3. **D1–D4 and D6** (generator and validation). Re-run that data pack and check the result matches my hand-fixed payload in `runs/2026-10-08-payer/data-pack/overlay-payload.json`.
+4. **E6 and P1–P2** (automated pre-flight). Then re-run that pre-flight from scratch as the acceptance test: zero leftovers and one caption per card on all 4 screens.
 5. **D5, S4, P3 and P4** when there's time.
